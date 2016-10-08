@@ -1,0 +1,38 @@
+{
+    "CastleNum": 20,
+    "CastleStartUnitNum" :  30,
+    "CastleDistance" : 80.0,
+    "PlayerDistance" : 120.0,
+    "Width" : 897,
+    "Height" : 377,
+    "UnitRunRatio" : 0.03,
+    "UnitSpeed" : 2.0,
+    "UnitAttackRange" : 5.0,
+    "UpgradeInfo" :
+    [
+        {
+            "Cost" : 60,
+            "MaxNum" : 100,
+            "Radius" : 15.0,
+            "IncreaseRatio" : 0.02
+        },
+        {
+            "Cost" : 150,
+            "MaxNum" : 200,
+            "Radius" : 20.0,
+            "IncreaseRatio" : 0.024
+        },
+        {
+            "Cost" : 240,
+            "MaxNum" : 300,
+            "Radius" : 25.0,
+            "IncreaseRatio" : 0.028
+        },
+        {
+            "Cost" : -1,
+            "MaxNum" : 500,
+            "Radius" : 30.0,
+            "IncreaseRatio" : 0.032
+        }
+    ]
+}

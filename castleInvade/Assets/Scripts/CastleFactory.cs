@@ -6,7 +6,6 @@ public class CastleFactory : MonoBehaviour
     public GameObject CastlePrefab;
     ObjectPool<GameObject> castlePool;
 
-
     void Start()
     {
         castlePool = new ObjectPool<GameObject>(10, () =>
@@ -20,8 +19,8 @@ public class CastleFactory : MonoBehaviour
         return castlePool.pop();
     }
 
-    public void Release(GameObject obj)
+    public void Release(GameObject _obj)
     {
-        castlePool.push(obj);
+        castlePool.push(_obj);
     }
 }

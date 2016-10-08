@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class TitleControllScript : MonoBehaviour {
+public class TitleControlScript : MonoBehaviour {
 
     public void OnClickStartButton()
     {
