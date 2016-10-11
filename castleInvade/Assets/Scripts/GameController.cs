@@ -26,19 +26,23 @@ public class GameController : MonoBehaviour
         string optionStr = File.ReadAllText(optionPath);
         var option = JsonConvert.DeserializeObject<MatchOption>(optionStr);
 
+        //플레이어 생성
         List<Player> players = new List<Player>();
         for (int i = 0; i < PlayerCount; i++)
         {
             var player = new AI();
-            player.Id = i;
+            player.Id = i + 1;
             players.Add(player);
         }
 
+        //매치 시뮬레이터 초기화
         match = new Match(option, players);
         match.Init();
 
+        //맵 컨트롤러 사이즈 설정
         MapController.SetMapSize(new Vector2(option.Width, option.Height));
 
+        //게임 시작
         StartCoroutine(UpdatePlayFrame());
     }
 
@@ -56,7 +60,11 @@ public class GameController : MonoBehaviour
             foreach (var castle in match.Castles)
             {
                 var castleView = MapController.GetCastleView(castle);
-                castleView.UpdateCastle(castle.UnitNum, castle.Radius);
+                int ownerId = 0;
+                if (castle.Owner != null)
+                    ownerId = castle.Owner.Id;
+
+                castleView.UpdateCastle(castle.UnitNum, castle.Radius, PlayerColorSelector.GetColorByNumber(ownerId));
             }
 
             foreach (var unitQueue in match.Units.Values)
@@ -68,7 +76,20 @@ public class GameController : MonoBehaviour
                 }
             }
 
+            foreach(var gameEvent in match.EventQueue)
+            {
+                HandleEvent(gameEvent);
+            }
+
             yield return new WaitForSeconds(deltaTime);
+        }
+    }
+
+    void HandleEvent(GameEvent e)
+    {
+        if(e is UnitDeadEvent)
+        {
+            MapController.RemoveUnitObject((e as UnitDeadEvent).UnitId);
         }
     }
 }

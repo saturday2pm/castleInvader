@@ -10,8 +10,11 @@ namespace Simulator
 		Random r = new Random();
         List<Player> players = new List<Player>();
         List<Castle> castles = new List<Castle>();
+        List<GameEvent> eventQueue = new List<GameEvent>();
+
         public List<Player> Players { get { return players; } private set { players = value; } }
 		public List<Castle> Castles { get { return castles; } private set { castles = value; } }
+        public List<GameEvent> EventQueue { get { return eventQueue; } private set { eventQueue = value; } }
 
 		int waypointId = 0;
         int unitId = 0;
@@ -83,6 +86,8 @@ namespace Simulator
 
 		public void Update()
 		{
+            eventQueue.Clear();
+
 			//각 path에 있는 유닛들에 대한 결과를 처리한다
 			foreach (var unitQueue in Units.Values)
 			{
@@ -98,13 +103,18 @@ namespace Simulator
 						case BattleResult.AttackCastle:
 						case BattleResult.Draw:
 						case BattleResult.Lose:
-							unitQueue.RemoveAt(i);
-							break;
+                            {
+                                unitQueue.RemoveAt(i);
+                                eventQueue.Add(new UnitDeadEvent(unit.Id));
+                                break;
+                            }
 						case BattleResult.Win:
 						case BattleResult.NotBattle:
-							unit.Move(this);
-							i++;
-							break;
+                            {
+                                unit.Move(this);
+                                i++;
+                                break;
+                            }
 						default:
 							throw new NotImplementedException();
 					}
@@ -117,16 +127,24 @@ namespace Simulator
 				castle.Update(this);
 			}
 
-			//가진 성이 0개, 유닛도 없음 -> 멸망!
-			Players.RemoveAll(p => p.OwnCastles.Count == 0 && Units.All(pair=>pair.Value.All(u=>u.Owner != p)));
 
-			//플레이어의 액션에 따른 변화를 반영한다
-			foreach (var player in Players)
-			{
-				player.Update(this);
+            //플레이어의 액션에 따른 변화를 반영한다
+            foreach (var player in Players)
+            {
+                //가진 성이 0개, 유닛도 없음 -> 멸망!
+                if (player.OwnCastles.Count == 0 && Units.All(pair => pair.Value.All(u => u.Owner != player)))
+                {
+                    player.IsGoingToEnd = true;
+                    eventQueue.Add(new PlayerDeadEvent(player.Id));
+                }
+                else
+                {
+                    player.Update(this);
+                }
 			}
+            Players.RemoveAll(p => p.IsGoingToEnd);
 
-			Frame++;
+            Frame++;
 		}
 
 		public bool IsEnd()

@@ -13,14 +13,15 @@ public class CastleController : MonoBehaviour
     public bool Init(int _id, Vector2 _position, int _unitCount, float _size, Color _color)
     {
         id = _id;
-        CastleSprite.color = _color;
         transform.localPosition = new Vector3(_position.x, _position.y, 0);
-        UpdateCastle(_unitCount, _size);
+        UpdateCastle(_unitCount, _size, _color);
         return true;
     }
 
-    public void UpdateCastle(int _unitCount, float _size)
+    public void UpdateCastle(int _unitCount, float _size, Color _color)
     {
+        CastleSprite.color = _color;
+
         int rectSize = (int)(_size * 2.0f);
         CastleSprite.width = rectSize;
         CastleSprite.height = rectSize;

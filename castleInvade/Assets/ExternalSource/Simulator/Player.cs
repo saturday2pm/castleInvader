@@ -10,6 +10,9 @@ namespace Simulator
 		public List<Castle> OwnCastles { get { return ownCastles; } private set { ownCastles = value; } }
         public int Id { get; set; }
 
+        bool isGoingToEnd = false;
+        public bool IsGoingToEnd { get { return isGoingToEnd; } set { value = isGoingToEnd; } }
+
 		public void RemoveCastle(Castle c)
 		{
 			OwnCastles.Remove(c);

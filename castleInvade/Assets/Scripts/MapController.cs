@@ -18,7 +18,7 @@ public class MapController : MonoBehaviour
 
     void Awake()
     {
-        unitPool = new ObjectPool<GameObject>(10, () => { return Instantiate(UnitPrefab); });
+        unitPool = new ObjectPool<GameObject>(100, () => { return Instantiate(UnitPrefab); });
         castlePool = new ObjectPool<GameObject>(10, () => { return Instantiate(CastlePrefab); });
     }
 
@@ -42,6 +42,7 @@ public class MapController : MonoBehaviour
         {
             castleObject.transform.parent = transform;
             castleObject.transform.localScale = Vector3.one;
+            castleObject.SetActive(true);
             NGUITools.SetActive(castleObject, true);
             castleController.Init(_id, _position, _unitCount, _size, PlayerColorSelector.GetColorByNumber(_ownerIdx));
             castles[_id] = castleController;
@@ -62,11 +63,26 @@ public class MapController : MonoBehaviour
         }
     }
 
+    public void RemoveUnitObject(int _id)
+    {
+        if (units.ContainsKey(_id))
+        {
+            var targetObject = units[_id].gameObject;
+            NGUITools.SetActive(targetObject, false);
+            unitPool.push(targetObject);
+            units.Remove(_id);
+        }
+    }
+
     public CastleController GetCastleView(Castle castle)
     {
         if(!castles.ContainsKey(castle.Id))
         {
-            CreateCastleObject(castle.Id, new Vector2(castle.Pos.X, castle.Pos.Y), castle.UnitNum, castle.Radius, 0);
+            int castleOwnerId = 0;
+            if (castle.Owner != null)
+                castleOwnerId = castle.Owner.Id;
+
+            CreateCastleObject(castle.Id, new Vector2(castle.Pos.X, castle.Pos.Y), castle.UnitNum, castle.Radius, castleOwnerId);
         }
         return castles[castle.Id];
     }
