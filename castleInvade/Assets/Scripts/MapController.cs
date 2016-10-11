@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Simulator;
 using ObjectPool;
 
 public class MapController : MonoBehaviour
@@ -13,7 +14,8 @@ public class MapController : MonoBehaviour
     ObjectPool<GameObject> castlePool;
 
     Dictionary<int, CastleController> castles = new Dictionary<int, CastleController>();
-    
+    Dictionary<int, UnitController> units = new Dictionary<int, UnitController>();
+
     void Awake()
     {
         unitPool = new ObjectPool<GameObject>(10, () => { return Instantiate(UnitPrefab); });
@@ -32,7 +34,7 @@ public class MapController : MonoBehaviour
         transform.localPosition = new Vector3(size.x * -0.5f, size.y * -0.5f, 0.0f);
     }
 
-    public void MakeCastleObject(int _id, Vector2 _position, int _unitCount, float _size)
+    public void CreateCastleObject(int _id, Vector2 _position, int _unitCount, float _size, int _ownerIdx)
     {
         var castleObject = castlePool.pop();
         var castleController = castleObject.GetComponent<CastleController>();
@@ -41,8 +43,40 @@ public class MapController : MonoBehaviour
             castleObject.transform.parent = transform;
             castleObject.transform.localScale = Vector3.one;
             NGUITools.SetActive(castleObject, true);
-            castleController.Init(_id, _position, _unitCount, _size);
+            castleController.Init(_id, _position, _unitCount, _size, PlayerColorSelector.GetColorByNumber(_ownerIdx));
             castles[_id] = castleController;
         }
+    }
+
+    public void CreateUnitObject(int _id, Vector2 _position, int _unitCount, int _ownerIdx)
+    {
+        var unitObject = unitPool.pop();
+        var unitController = unitObject.GetComponent<UnitController>();
+        if(unitController != null)
+        {
+            unitController.transform.parent = transform;
+            unitController.transform.localScale = Vector3.one;
+            NGUITools.SetActive(unitObject, true);
+            unitController.Init(_id, _position, _unitCount, PlayerColorSelector.GetColorByNumber(_ownerIdx));
+            units[_id] = unitController;
+        }
+    }
+
+    public CastleController GetCastleView(Castle castle)
+    {
+        if(!castles.ContainsKey(castle.Id))
+        {
+            CreateCastleObject(castle.Id, new Vector2(castle.Pos.X, castle.Pos.Y), castle.UnitNum, castle.Radius, 0);
+        }
+        return castles[castle.Id];
+    }
+
+    public UnitController GetUnitView(Unit unit)
+    {
+        if (!units.ContainsKey(unit.Id))
+        {
+            CreateUnitObject(unit.Id, new Vector2(unit.Pos.X, unit.Pos.Y), unit.Num, unit.Owner.Id);
+        }
+        return units[unit.Id];
     }
 }

@@ -14,6 +14,7 @@ namespace Simulator
 		public List<Castle> Castles { get { return castles; } private set { castles = value; } }
 
 		int waypointId = 0;
+        int unitId = 0;
 
 		//unit을 그 unit이 속한 path로 구분해서 기억함. unit은 먼저 출발한 놈이 항상 먼저 도착
 		public Dictionary<Path, List<Unit> > Units = new Dictionary<Path, List<Unit> >();
@@ -158,7 +159,8 @@ namespace Simulator
 			if (!Units.ContainsKey(path))
 				Units.Add(path, new List<Unit>());
 
-			Units[path].Add(new Unit(num, start.Pos + startOffset * path.Dir, Option.UnitSpeed, Option.UnitAttackRange, owner, start, end));
+			Units[path].Add(new Unit(unitId, num, start.Pos + startOffset * path.Dir, Option.UnitSpeed, Option.UnitAttackRange, owner, start, end));
+            unitId++;
 		}
 
 		//성이 공격 범위 내에 있는지 계산해서 돌려줌

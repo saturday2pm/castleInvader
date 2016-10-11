@@ -231,7 +231,7 @@ MonoBehaviour:
   rightType: 1
   bottomType: 1
   topType: 1
-  mSprite: {fileID: 21300000, guid: c4e6e60058c9e4a45beed57e0a7a0154, type: 3}
+  mSprite: {fileID: 21300000, guid: 4ad5066c19c20f8439ef0ddc43724f71, type: 3}
   mMat: {fileID: 0}
   mShader: {fileID: 4800000, guid: e75727d9555d9d14ca51d91908c681bc, type: 3}
   mBorder: {x: 0, y: 0, z: 0, w: 0}

@@ -10,15 +10,16 @@ public class CastleController : MonoBehaviour
     int id = -1;
     public int Id { get { return id; } }
 
-    public bool Init(int _id, Vector2 _position, int _unitCount, float _size)
+    public bool Init(int _id, Vector2 _position, int _unitCount, float _size, Color _color)
     {
         id = _id;
+        CastleSprite.color = _color;
         transform.localPosition = new Vector3(_position.x, _position.y, 0);
         UpdateCastle(_unitCount, _size);
         return true;
     }
 
-    void UpdateCastle(int _unitCount, float _size)
+    public void UpdateCastle(int _unitCount, float _size)
     {
         int rectSize = (int)(_size * 2.0f);
         CastleSprite.width = rectSize;

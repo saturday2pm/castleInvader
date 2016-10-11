@@ -51,6 +51,7 @@ namespace Simulator
 
 	public class Unit : IComparable<Unit>
 	{
+        public int Id { get; private set; }
 		//유닛의 현재 좌표
 		public Point Pos { get; private set; }
 		//해당 유닛의 병력 크기
@@ -64,8 +65,9 @@ namespace Simulator
 		float unitSpeed;
 		float attackRange;
 
-		public Unit(int num, float x, float y, float speed, float range, Player owner, Waypoint startPoint, Waypoint endPoint)
+		public Unit(int id, int num, float x, float y, float speed, float range, Player owner, Waypoint startPoint, Waypoint endPoint)
 		{
+            Id = id;
 			Num = num;
 
 			Pos.X = x;
@@ -79,8 +81,9 @@ namespace Simulator
 			Road = new Path(startPoint, endPoint);
 		}
 
-		public Unit(int num, Point pos, float speed, float range, Player owner, Waypoint startPoint, Waypoint endPoint)
+		public Unit(int id, int num, Point pos, float speed, float range, Player owner, Waypoint startPoint, Waypoint endPoint)
 		{
+            Id = id;
 			Num = num;
 
 			Pos = pos;
