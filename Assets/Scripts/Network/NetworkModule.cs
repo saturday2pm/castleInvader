@@ -1,10 +1,17 @@
 ﻿using UnityEngine;
 using ProtocolCS;
 using WebSocketSharp;
+using UnityEditor;
 
 public class NetworkModule : MonoBehaviour
 {
-    public bool IsAlive { get; set; }
+    public bool IsAlive
+    {
+        get
+        {
+            return webSocketClient.IsAlive;
+        }
+    }
     WebSocket webSocketClient;
 
     // Use this for initialization
@@ -51,16 +58,15 @@ public class NetworkModule : MonoBehaviour
 
     protected virtual void WsMatchMaking_OnClose(object sender, CloseEventArgs e)
     {
-        IsAlive = false;
     }
 
     protected virtual void WsMatchMaking_OnOpen(object sender, System.EventArgs e)
     {
-        IsAlive = true;
     }
 
     private void WsMatchMaking_OnMessage(object sender, MessageEventArgs e)
     {
+        Debug.Log("Recieve Message : " + e.Data.ToString());
         PacketHelper.PushPacket(e.Data);
     }
 }

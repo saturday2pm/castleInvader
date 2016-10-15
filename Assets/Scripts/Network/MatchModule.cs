@@ -8,6 +8,7 @@ public class MatchModule : NetworkModule
 {
     public static int CurrentPlayerId { get; set; }
     public static MatchSuccess LastSuccessMatch { get; set; }
+
     int connectCount = 0;
 
     void Start()
@@ -25,6 +26,7 @@ public class MatchModule : NetworkModule
 
         JoinQueue matchRequest = new JoinQueue() { senderId = CurrentPlayerId };
         Send(matchRequest);
+
         return true;
     }
 

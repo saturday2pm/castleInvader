@@ -5,17 +5,20 @@ using UnityEngine.SceneManagement;
 public class TitleControlScript : MonoBehaviour
 {
     public MatchModule MatchClient;
+    public UIButton StartButton;
+    public UIButton ExitButton;
 
     public void OnClickStartButton()
     {
-        //for test 콩
-        MatchClient.RequestMatch();
-
+        StartButton.enabled = false;
+        ExitButton.enabled = false;
         MatchClient.RequestMatch();
     }
 
     public void OnClickExitButton()
     {
+        StartButton.enabled = false;
+        ExitButton.enabled = false;
         Application.Quit();
     }
 }

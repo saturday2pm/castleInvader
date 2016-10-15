@@ -322,13 +322,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1288550081}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb7a49130839b07448e5b1bd323b78da, type: 3}
+  m_Script: {fileID: 11500000, guid: cd2d8a189dd08e446a4392c5ffbcb689, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapController: {fileID: 1532008642}
-  PlayerCount: 3
-  PlayFrame: 10
-  IsPlayWithoutNetwork: 1
+  MapController: {fileID: 1532008644}
+  PlayerCount: 0
+  PlayFrame: 0
+  IsPlayWithoutNetwork: 0
 --- !u!1 &1320759670
 GameObject:
   m_ObjectHideFlags: 0
@@ -380,6 +380,7 @@ GameObject:
   - 4: {fileID: 1532008641}
   - 114: {fileID: 1532008642}
   - 114: {fileID: 1532008643}
+  - 114: {fileID: 1532008644}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -412,9 +413,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BgSprite: {fileID: 1742189831}
-  UnitPrefab: {fileID: 1000012735718220, guid: c7e3e94a7a26c72409b0090450a12d80, type: 2}
-  CastlePrefab: {fileID: 1000011825986920, guid: 8f309ceeed289014a8d2030ac94be55e,
-    type: 2}
+  UnitPrefab: {fileID: 0, guid: c7e3e94a7a26c72409b0090450a12d80, type: 2}
+  CastlePrefab: {fileID: 0, guid: 8f309ceeed289014a8d2030ac94be55e, type: 2}
 --- !u!114 &1532008643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -452,6 +452,21 @@ MonoBehaviour:
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 2
+--- !u!114 &1532008644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1532008640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f3b1a8990339614ba19027622972315, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BgSprite: {fileID: 1742189831}
+  UnitPrefab: {fileID: 1000012735718220, guid: c7e3e94a7a26c72409b0090450a12d80, type: 2}
+  CastlePrefab: {fileID: 1000011825986920, guid: 8f309ceeed289014a8d2030ac94be55e,
+    type: 2}
 --- !u!1 &1742189829
 GameObject:
   m_ObjectHideFlags: 0

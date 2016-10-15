@@ -635,7 +635,7 @@ GameObject:
   - 4: {fileID: 1383804357}
   - 114: {fileID: 1383804356}
   m_Layer: 0
-  m_Name: MatchNetworkController
+  m_Name: NetworkController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -979,7 +979,7 @@ MonoBehaviour:
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
   onClick:
-  - mTarget: {fileID: 1383804356}
+  - mTarget: {fileID: 345608528}
     mMethodName: OnClickStartButton
     mParameters: []
     oneShot: 0

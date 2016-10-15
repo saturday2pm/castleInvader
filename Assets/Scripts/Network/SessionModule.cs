@@ -1,6 +1,8 @@
 ﻿using ProtocolCS;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using WebSocketSharp;
+using System;
 
 class SessionModule : NetworkModule
 {
@@ -10,7 +12,7 @@ class SessionModule : NetworkModule
     void Start()
     {
         MatchData = MatchModule.LastSuccessMatch;
-        Connect(UriBuilder.Create(MatchData.gameServerAddress, MatchData.senderId.ToString(), MatchData.matchToken));
+        Connect(ProtocolCS.UriBuilder.Create(MatchData.gameServerAddress, MatchData.senderId.ToString(), MatchData.matchToken));
 
         PacketHelper.AddHandler<StartGame>(OnStartGame);
         PacketHelper.AddHandler<CancelGame>(OnCancelGame);
@@ -26,6 +28,11 @@ class SessionModule : NetworkModule
         Send(joinReq);
 
         return true;
+    }
+
+    protected override void WsMatchMaking_OnOpen(object sender, EventArgs e)
+    {
+        RequestJoinGame();  
     }
 
     private void OnStartGame(StartGame _startData)
