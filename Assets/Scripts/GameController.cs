@@ -8,7 +8,8 @@ using Newtonsoft.Json;
 
 public class GameController : MonoBehaviour
 {
-    List<Player> players;
+    Dictionary<int, PlayerObject> playerDictionary = new Dictionary<int, PlayerObject>();
+    MatchOption option;
     Match match;
     Timer timer;
 
@@ -24,19 +25,35 @@ public class GameController : MonoBehaviour
             throw new FileLoadException("Option.json is not exist!");
 
         string optionStr = File.ReadAllText(optionPath);
-        var option = JsonConvert.DeserializeObject<MatchOption>(optionStr);
+        option = JsonConvert.DeserializeObject<MatchOption>(optionStr);
 
-        //플레이어 생성
-        List<Player> players = new List<Player>();
-        for (int i = 0; i < PlayerCount; i++)
+        //non network test
         {
-            var player = new AI();
-            player.Id = i + 1;
-            players.Add(player);
+            List<Player> testPlayers = new List<Player>();
+            for (int i = 0; i < PlayerCount; i++)
+            {
+                var player = new AI();
+                player.Id = i + 1;
+                testPlayers.Add(player);
+            }
+            Init(testPlayers, -1);
         }
+    }
+
+    public bool Init(List<Player> _players, int _seed)
+    {
+        if (option == null || _players == null || _players.Count < 1)
+            return false;
+
+        /*
+        foreach(var player in _players)
+        {
+            playerDictionary[player.Id] = player;
+        }
+        */
 
         //매치 시뮬레이터 초기화
-        match = new Match(option, players);
+        match = new Match(option, _players, _seed);
         match.Init();
 
         //맵 컨트롤러 사이즈 설정
@@ -44,6 +61,7 @@ public class GameController : MonoBehaviour
 
         //게임 시작
         StartCoroutine(UpdatePlayFrame());
+        return true;
     }
 
     IEnumerator UpdatePlayFrame()

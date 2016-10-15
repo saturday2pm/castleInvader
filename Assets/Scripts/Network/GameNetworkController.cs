@@ -1,11 +1,40 @@
 ﻿using ProtocolCS;
+using System.Linq;
+using UnityEngine;
 
 class GameNetworkController : NetworkController
 {
-    void Init()
+    public GameController GameController;
+    public MatchSuccess MatchData { get; set; }
+    public bool Init()
     {
-        MatchSuccess lastSuccessMatch = MatchNetworkController.LastSuccessMatch;
-        Init(UriBuilder.Create(lastSuccessMatch.gameServerAddress, lastSuccessMatch.senderId.ToString(), lastSuccessMatch.matchToken));
+        MatchData = MatchNetworkController.LastSuccessMatch;
+        if (MatchData == null)
+            return false;
+
+        Init(UriBuilder.Create(MatchData.gameServerAddress, MatchData.senderId.ToString(), MatchData.matchToken));
+
+        PacketHelper.AddHandler<StartGame>(OnStartGame);
+
+        return true;
     }
+
+    public bool RequestJoinGame()
+    {
+        if (!IsAlive)
+            return false;
+
+        var joinReq = new JoinGame() { matchToken = MatchData.matchToken };
+        Send(joinReq);
+
+        return true;
+    }
+
+    private void OnStartGame(StartGame startData)
+    {
+        //GameController.Init(, startData.seed);
+    }
+
+
 }
 

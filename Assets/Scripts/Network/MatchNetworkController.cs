@@ -6,12 +6,26 @@ class MatchNetworkController : NetworkController
 {
     public static int CurrentPlayerId { get; set; }
     public static MatchSuccess LastSuccessMatch { get; set; }
-    public void Init()
+
+    void Start()
+    {
+        Init();
+    }
+
+    public bool Init()
     {
         CurrentPlayerId = new Random().Next(1000);
         LastSuccessMatch = null;
-        Init("ws://localhost/mmaker?version=" + ProtocolVersion.version);
+        Init("ws://localhost:9916/mmaker?version=" + ProtocolVersion.version);
         PacketHelper.AddHandler<MatchSuccess>(OnMatchSuccess);
+
+        return true;
+    }
+
+    public void OnClickStartButton()
+    {
+        RequestMatch();
+        RequestMatch();
     }
 
     public bool RequestMatch()
