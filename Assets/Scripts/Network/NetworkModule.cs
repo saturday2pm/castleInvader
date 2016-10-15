@@ -20,9 +20,9 @@ public class NetworkModule : MonoBehaviour
         webSocketClient = new WebSocket(url);
         webSocketClient.ConnectAsync();
 
-        webSocketClient.OnOpen += WsMatchMaking_OnOpen;
-        webSocketClient.OnMessage += WsMatchMaking_OnMessage; ;
-        webSocketClient.OnClose += WsMatchMaking_OnClose;    
+        webSocketClient.OnOpen += OnOpen;
+        webSocketClient.OnMessage += OnMessage; ;
+        webSocketClient.OnClose += OnClose;    
     }
 
     public void Close()
@@ -40,31 +40,31 @@ public class NetworkModule : MonoBehaviour
         webSocketClient.SendAsync(Serializer.ToJson(packet),
             x => {
                 if(x)
-                    WsSend_OnCompleteSuccess(packet);
+                    OnSendSuccess(packet);
                 else
-                    WsSend_OnCompleteFail(packet);
+                    OnSendFail(packet);
             });
     }
 
-    protected virtual void WsSend_OnCompleteSuccess<T>(T successPacket) where T : PacketBase
+    protected virtual void OnSendSuccess<T>(T successPacket) where T : PacketBase
     {
         Debug.Log("Send Success : " + Serializer.ToJson(successPacket));
     }
 
-    protected virtual void WsSend_OnCompleteFail<T>(T failedPacket) where T : PacketBase
+    protected virtual void OnSendFail<T>(T failedPacket) where T : PacketBase
     {
         Debug.Log("Send Failed : " + Serializer.ToJson(failedPacket));
     }
 
-    protected virtual void WsMatchMaking_OnClose(object sender, CloseEventArgs e)
+    protected virtual void OnClose(object sender, CloseEventArgs e)
     {
     }
 
-    protected virtual void WsMatchMaking_OnOpen(object sender, System.EventArgs e)
+    protected virtual void OnOpen(object sender, System.EventArgs e)
     {
     }
 
-    private void WsMatchMaking_OnMessage(object sender, MessageEventArgs e)
+    private void OnMessage(object sender, MessageEventArgs e)
     {
         Debug.Log("Recieve Message : " + e.Data.ToString());
         PacketHelper.PushPacket(e.Data);

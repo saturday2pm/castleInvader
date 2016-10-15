@@ -30,7 +30,7 @@ class SessionModule : NetworkModule
         return true;
     }
 
-    protected override void WsMatchMaking_OnOpen(object sender, EventArgs e)
+    protected override void OnOpen(object sender, EventArgs e)
     {
         RequestJoinGame();  
     }
