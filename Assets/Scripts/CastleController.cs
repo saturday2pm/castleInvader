@@ -53,4 +53,15 @@ public class CastleController : MonoBehaviour
         }
         InputController.OnCastleClick(this);
     }
+    public void ActiveSelector()
+    {
+        var selector = GetComponent<UIButton>();
+        selector.SetState(UIButtonColor.State.Pressed, true);
+    }
+
+    public void HoverSelector()
+    {
+        var selector = GetComponent<UIButton>();
+        selector.SetState(UIButtonColor.State.Hover, true);
+    }
 }
