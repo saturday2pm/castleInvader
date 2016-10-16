@@ -12,6 +12,9 @@ class SessionModule : NetworkModule
     void Start()
     {
         MatchData = MatchModule.LastSuccessMatch;
+        if (MatchData == null)
+            return;
+
         Connect(ProtocolCS.UriBuilder.Create(MatchData.gameServerAddress, MatchData.senderId.ToString(), MatchData.matchToken));
 
         PacketHelper.AddHandler<StartGame>(OnStartGame);

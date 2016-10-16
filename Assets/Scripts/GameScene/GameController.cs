@@ -16,7 +16,6 @@ public class GameController : MonoBehaviour
     public MapController MapController;
     public int PlayerCount;
     public int PlayFrame;
-    public bool IsPlayWithoutNetwork;
 
     void Start()
     {
@@ -28,7 +27,8 @@ public class GameController : MonoBehaviour
         string optionStr = File.ReadAllText(optionPath);
         option = JsonConvert.DeserializeObject<MatchOption>(optionStr);
 
-        if(IsPlayWithoutNetwork)
+        //매치 데이터 없는경우 싱글 게임을 위한 AI 플레이어 생성
+        if (MatchModule.LastSuccessMatch == null)
         {
             List<Simulator.Player> testPlayers = new List<Simulator.Player>();
             for (int i = 0; i < PlayerCount; i++)
@@ -59,8 +59,8 @@ public class GameController : MonoBehaviour
         //맵 컨트롤러 사이즈 설정
         MapController.SetMapSize(new Vector2(option.Width, option.Height));
 
-        //게임 시작
-        if(IsPlayWithoutNetwork)
+        //매치 데이터 없는경우 싱글 게임을 위한 코루틴 시작
+        if(MatchModule.LastSuccessMatch == null)
             StartCoroutine(UpdatePlayFrameByTime());
 
         return true;
@@ -100,7 +100,7 @@ public class GameController : MonoBehaviour
 
     IEnumerator UpdatePlayFrameByTime()
     {
-        float deltaTime = PlayFrame * (1.0f / 60.0f);
+        float deltaTime = (1.0f / PlayFrame);
 
         while (true)
         {
