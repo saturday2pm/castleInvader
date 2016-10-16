@@ -43,7 +43,7 @@ public class MapController : MonoBehaviour
             castleObject.transform.localScale = Vector3.one;
             castleObject.SetActive(true);
             NGUITools.SetActive(castleObject, true);
-            castleController.Init(_id, _position, _unitCount, _size, PlayerColorSelector.GetColorByNumber(_ownerIdx));
+            castleController.Init(_id, _position, _unitCount, _size, PlayerColorSelector.GetColorById(_ownerIdx));
             castles[_id] = castleController;
         }
     }
@@ -57,7 +57,7 @@ public class MapController : MonoBehaviour
             unitController.transform.parent = transform;
             unitController.transform.localScale = Vector3.one;
             NGUITools.SetActive(unitObject, true);
-            unitController.Init(_id, _position, _unitCount, PlayerColorSelector.GetColorByNumber(_ownerIdx));
+            unitController.Init(_id, _position, _unitCount, PlayerColorSelector.GetColorById(_ownerIdx));
             units[_id] = unitController;
         }
     }

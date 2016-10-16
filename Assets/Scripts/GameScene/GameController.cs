@@ -66,17 +66,36 @@ public class GameController : MonoBehaviour
         return true;
     }
 
-    public void UpdatePlayFrameByNetwork(Frame _frame)
+    public Frame UpdatePlayFrameByNetwork(Frame _frame)
     {
         foreach(var e in _frame.events)
         {
             var player = playerDictionary[e.player.id] as NetworkPlayerObject;
             if(player != null)
             {
-                player.EventQueue.Add(e);
+                player.InputEvent.Add(e);
             }
         }
+
         UpdateGame();
+
+        var outEventList = new List<IngameEvent>();
+        foreach (var player in playerDictionary.Values)
+        {
+            var p = player as NetworkPlayerObject;
+            if(p != null)
+            {
+                outEventList.AddRange(p.OutputEvent);
+                p.OutputEvent.Clear();
+            }
+        }
+
+        return new Frame()
+        {
+            frameNo = _frame.frameNo,
+            events = outEventList.ToArray(),
+            senderId = _frame.senderId
+        };
     }
 
     IEnumerator UpdatePlayFrameByTime()
@@ -105,7 +124,7 @@ public class GameController : MonoBehaviour
             if (castle.Owner != null)
                 ownerId = castle.Owner.Id;
 
-            castleView.UpdateCastle(castle.UnitNum, castle.Radius, PlayerColorSelector.GetColorByNumber(ownerId));
+            castleView.UpdateCastle(castle.UnitNum, castle.Radius, PlayerColorSelector.GetColorById(ownerId));
         }
 
         foreach (var unitQueue in match.Units.Values)

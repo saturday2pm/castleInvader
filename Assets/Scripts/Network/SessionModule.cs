@@ -38,7 +38,7 @@ class SessionModule : NetworkModule
     private void OnStartGame(StartGame _startData)
     {
         var playerObjects = _startData.players.ToList().ConvertAll(x => {
-            return new NetworkPlayerObject()
+            return new NetworkAIPlayerObject()
             {
                 Id = x.id,
                 Name = x.name,
@@ -46,6 +46,9 @@ class SessionModule : NetworkModule
         }).Cast<Simulator.Player>().ToList();
 
         GameController.BeginPlay(playerObjects, _startData.seed);
+
+        var emptyFrame = new Frame() { events = new IngameEvent[] { }, senderId = MatchData.senderId };
+        Send(emptyFrame);
     }
 
     private void OnCancelGame(CancelGame _cancleData)
@@ -56,7 +59,8 @@ class SessionModule : NetworkModule
 
     private void OnFrameUpdate(Frame _frame)
     {
-        GameController.UpdatePlayFrameByNetwork(_frame);
+        Frame nextFrame = GameController.UpdatePlayFrameByNetwork(_frame);
+        Send(nextFrame);
     }
 }
 

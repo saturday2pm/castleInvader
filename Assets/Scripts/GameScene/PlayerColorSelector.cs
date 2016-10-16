@@ -7,14 +7,17 @@ using System.Text;
 class PlayerColorSelector
 {
     static Color[] playerColors = { Color.black, Color.blue, Color.cyan, Color.gray, Color.green, Color.magenta, Color.red, Color.white, Color.yellow };
-    static public Color GetColorByNumber(int number)
+    static Dictionary<int, Color> colorDict = new Dictionary<int, Color>();
+    static int availableColorIdx = 0;
+    static public Color GetColorById(int _id)
     {
-        if (number >= playerColors.Length)
+        if (!colorDict.ContainsKey(_id))
         {
-            throw new Exception("too many players.");
+            Color color = playerColors[availableColorIdx++];
+            colorDict[_id] = color;
         }
 
-        return playerColors[number];
+        return colorDict[_id];
     }
 }
 

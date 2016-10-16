@@ -8,6 +8,8 @@ public class MatchModule : NetworkModule
 {
     public static int CurrentPlayerId { get; set; }
     public static MatchSuccess LastSuccessMatch { get; set; }
+    public delegate void ConnectionChanged();
+    public ConnectionChanged OnConnected { get; set; }
 
     int connectCount = 0;
 
@@ -48,6 +50,12 @@ public class MatchModule : NetworkModule
         JoinBotQueue matchRequest = new JoinBotQueue() { senderId = CurrentPlayerId };
         Send(matchRequest);
         return true;
+    }
+
+    protected override void OnOpen(object sender, EventArgs e)
+    {
+        base.OnOpen(sender, e);
+        OnConnected();
     }
 
     private void OnMatchSuccess(MatchSuccess matchData)

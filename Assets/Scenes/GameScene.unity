@@ -412,9 +412,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fe8ca3c58631a4489d6c5a8d46b1d3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BgSprite: {fileID: 1742189831}
-  UnitPrefab: {fileID: 0, guid: c7e3e94a7a26c72409b0090450a12d80, type: 2}
-  CastlePrefab: {fileID: 0, guid: 8f309ceeed289014a8d2030ac94be55e, type: 2}
 --- !u!114 &1532008643
 MonoBehaviour:
   m_ObjectHideFlags: 0

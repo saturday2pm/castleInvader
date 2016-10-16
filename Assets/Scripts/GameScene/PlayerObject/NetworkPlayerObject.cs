@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class NetworkPlayerObject : Simulator.Player
 {
-    public List<IngameEvent> EventQueue = new List<IngameEvent>();
+    public List<IngameEvent> InputEvent = new List<IngameEvent>();
+    public List<IngameEvent> OutputEvent = new List<IngameEvent>();
+
     Match match;
 
     public override void Init(Match match)
@@ -16,11 +18,11 @@ public class NetworkPlayerObject : Simulator.Player
     public override void Update(Match _match)
     {
         match = _match;
-        foreach (var e in EventQueue)
+        foreach (var e in InputEvent)
         {
             HandleEvent(e);
         }
-        EventQueue.Clear();
+        InputEvent.Clear();
     }
 
     void HandleEvent(IngameEvent _event)
@@ -34,19 +36,14 @@ public class NetworkPlayerObject : Simulator.Player
     void OnMove(MoveEvent _event)
     {
         var srcCastle = match.Castles[_event.from.id];
-        srcCastle.Attack(new Simulator.Waypoint(_event.to.id));
+        var dstCastle = match.Castles[_event.to.id];
+        srcCastle.Attack(dstCastle);
     }
 
     void OnUpgrade(UpgradeEvent _event)
     {
         var targetCastle = match.Castles[_event.castle.id];
-        CastleType src = _event.castle.type;
-        CastleType dst = _event.upgradeTo;
-        int upgradeStep = dst - src;
-        for (int i = 0; i < upgradeStep; ++i)
-        {
-            targetCastle.Upgrade();
-        }
+        targetCastle.Upgrade();
     }
 
     void OnUnhandledEvent()
