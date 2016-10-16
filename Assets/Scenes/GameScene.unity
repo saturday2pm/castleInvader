@@ -295,7 +295,7 @@ GameObject:
   - 4: {fileID: 1288550082}
   - 114: {fileID: 1288550083}
   m_Layer: 0
-  m_Name: GameController
+  m_Name: GameContorller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -313,7 +313,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
 --- !u!114 &1288550083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,12 +322,54 @@ MonoBehaviour:
   m_GameObject: {fileID: 1288550081}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb7a49130839b07448e5b1bd323b78da, type: 3}
+  m_Script: {fileID: 11500000, guid: cd2d8a189dd08e446a4392c5ffbcb689, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MapController: {fileID: 1532008642}
-  PlayerCount: 3
-  PlayFrame: 10
+  MapController: {fileID: 1532008644}
+  PlayerCount: 0
+  PlayFrame: 0
+  IsPlayWithoutNetwork: 0
+--- !u!1 &1320759670
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1320759671}
+  - 114: {fileID: 1320759672}
+  m_Layer: 0
+  m_Name: NetworkController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1320759671
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1320759670}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.11647737, y: 0.058084078, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+--- !u!114 &1320759672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1320759670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb992cead87c82f4da71af8c54e7fe12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GameController: {fileID: 1288550083}
 --- !u!1 &1532008640
 GameObject:
   m_ObjectHideFlags: 0
@@ -338,11 +380,10 @@ GameObject:
   - 4: {fileID: 1532008641}
   - 114: {fileID: 1532008642}
   - 114: {fileID: 1532008643}
-  - 65: {fileID: 1532008645}
   - 114: {fileID: 1532008644}
   m_Layer: 0
   m_Name: Map
-  m_TagString: Map
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -371,10 +412,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fe8ca3c58631a4489d6c5a8d46b1d3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BgSprite: {fileID: 1742189831}
-  UnitPrefab: {fileID: 1000012735718220, guid: c7e3e94a7a26c72409b0090450a12d80, type: 2}
-  CastlePrefab: {fileID: 1000011825986920, guid: 8f309ceeed289014a8d2030ac94be55e,
-    type: 2}
 --- !u!114 &1532008643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,7 +445,7 @@ MonoBehaviour:
   mWidth: 1200
   mHeight: 600
   mDepth: 0
-  autoResizeBoxCollider: 1
+  autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 2
@@ -420,39 +457,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1532008640}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
+  m_Script: {fileID: 11500000, guid: 3f3b1a8990339614ba19027622972315, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tweenTarget: {fileID: 1532008640}
-  hover: {r: 1, g: 1, b: 1, a: 1}
-  pressed: {r: 1, g: 1, b: 1, a: 1}
-  disabledColor: {r: 1, g: 1, b: 1, a: 1}
-  duration: 0.2
-  dragHighlight: 0
-  hoverSprite: 
-  pressedSprite: 
-  disabledSprite: 
-  hoverSprite2D: {fileID: 0}
-  pressedSprite2D: {fileID: 0}
-  disabledSprite2D: {fileID: 0}
-  pixelSnap: 0
-  onClick:
-  - mTarget: {fileID: 2079349543}
-    mMethodName: OnBackgroundClick
-    mParameters: []
-    oneShot: 0
---- !u!65 &1532008645
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1532008640}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1200, y: 600, z: 0}
-  m_Center: {x: 600, y: 300, z: 0}
+  BgSprite: {fileID: 1742189831}
+  UnitPrefab: {fileID: 1000012735718220, guid: c7e3e94a7a26c72409b0090450a12d80, type: 2}
+  CastlePrefab: {fileID: 1000011825986920, guid: 8f309ceeed289014a8d2030ac94be55e,
+    type: 2}
 --- !u!1 &1742189829
 GameObject:
   m_ObjectHideFlags: 0
@@ -515,7 +526,7 @@ MonoBehaviour:
   mWidth: 1346
   mHeight: 708
   mDepth: 0
-  autoResizeBoxCollider: 1
+  autoResizeBoxCollider: 0
   hideIfOffScreen: 0
   keepAspectRatio: 0
   aspectRatio: 1.90113
@@ -539,46 +550,6 @@ MonoBehaviour:
   mFixedAspect: 0
   mPixelSize: 1
   nextSprite: {fileID: 0}
---- !u!1 &2079349542
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 2079349544}
-  - 114: {fileID: 2079349543}
-  m_Layer: 0
-  m_Name: InputController
-  m_TagString: InputController
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2079349543
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2079349542}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07e25e36336e9904fb84188ee07cd2ed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &2079349544
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2079349542}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
 --- !u!1 &2089991543
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,7 +657,7 @@ Transform:
   m_GameObject: {fileID: 2089991543}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.0043668123, y: 0.0043668123, z: 0.0043668123}
+  m_LocalScale: {x: 0.003215434, y: 0.003215434, z: 0.003215434}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 247977358}

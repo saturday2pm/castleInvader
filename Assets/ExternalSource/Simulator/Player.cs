@@ -9,6 +9,7 @@ namespace Simulator
         List<Castle> ownCastles = new List<Castle>();
 		public List<Castle> OwnCastles { get { return ownCastles; } private set { ownCastles = value; } }
         public int Id { get; set; }
+        public string Name { get; set; }
 
         bool isGoingToEnd = false;
         public bool IsGoingToEnd { get { return isGoingToEnd; } set { value = isGoingToEnd; } }

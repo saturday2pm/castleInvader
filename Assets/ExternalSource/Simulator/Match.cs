@@ -7,14 +7,14 @@ namespace Simulator
 {
     public class Match
     {
-		Random r = new Random();
+		Random r;
         List<Player> players = new List<Player>();
         List<Castle> castles = new List<Castle>();
-        List<GameEvent> eventQueue = new List<GameEvent>();
+        List<MatchEvent> eventQueue = new List<MatchEvent>();
 
         public List<Player> Players { get { return players; } private set { players = value; } }
 		public List<Castle> Castles { get { return castles; } private set { castles = value; } }
-        public List<GameEvent> EventQueue { get { return eventQueue; } private set { eventQueue = value; } }
+        public List<MatchEvent> EventQueue { get { return eventQueue; } private set { eventQueue = value; } }
 
 		int waypointId = 0;
         int unitId = 0;
@@ -26,8 +26,9 @@ namespace Simulator
 
 		public MatchOption Option { get; private set; }
 
-		public Match(MatchOption option, List<Player> players)
+		public Match(MatchOption option, List<Player> players, int seed)
 		{
+            r = new Random(seed);
 			Option = option;
 			Players = players;
 		}
