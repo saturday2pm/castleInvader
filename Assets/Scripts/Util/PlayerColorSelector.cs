@@ -6,7 +6,7 @@ using System.Text;
 
 class PlayerColorSelector
 {
-    static Color[] playerColors = { Color.black, Color.blue, Color.cyan, Color.gray, Color.green, Color.magenta, Color.red, Color.white, Color.yellow };
+    static Color[] playerColors = { Color.black, Color.blue, Color.cyan, Color.gray, Color.green, Color.magenta, Color.red, Color.yellow };
     static Dictionary<int, Color> colorDict = new Dictionary<int, Color>();
     static int availableColorIdx = 0;
     static public Color GetColorById(int _id)

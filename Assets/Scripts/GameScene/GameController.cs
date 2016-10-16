@@ -120,11 +120,11 @@ public class GameController : MonoBehaviour
         foreach (var castle in match.Castles)
         {
             var castleView = MapController.GetCastleObject(castle);
-            int ownerId = 0;
+            Color playerColor = Color.white;
             if (castle.Owner != null)
-                ownerId = castle.Owner.Id;
+                playerColor = PlayerColorSelector.GetColorById(castle.Owner.Id);
 
-            castleView.UpdateCastle(castle.UnitNum, castle.Radius, PlayerColorSelector.GetColorById(ownerId));
+            castleView.UpdateCastle(castle.UnitNum, castle.Radius, playerColor);
         }
 
         foreach (var unitQueue in match.Units.Values)
