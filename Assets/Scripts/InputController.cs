@@ -5,10 +5,11 @@ using Simulator;
 
 public class InputController : MonoBehaviour {
 
-    CastleController FirstSelectCastle;
-    CastleController SecondSelectCastle;
-    bool IsSecondClick = false;
+    CastleController FromCastle;
+    CastleController ToCastle;
+    bool IsFirstClicked = false;
 
+    static MapController MapController;
     // Use this for initialization
     void Start () {
 	    
@@ -16,7 +17,45 @@ public class InputController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        
+        if (IsFirstClicked)
+        {
+            if (!MapController)
+            {
+                var obj = GameObject.FindGameObjectWithTag("Map");
+                if (obj)
+                {
+                    MapController = obj.GetComponent<MapController>();
+                    if (!MapController)
+                    {
+                        Debug.Log("MapController is Missing!");
+                    }
+                }
+            }
+
+            Vector3 mousePos = Input.mousePosition;
+            CastleController hoverCastle = MapController.GetCastleByWorldPos(mousePos);
+            if (!hoverCastle)
+            {
+                if (ToCastle)
+                {
+                    ToCastle.DeactiveSelector();
+                    ToCastle = null;
+                }
+            }
+            else
+            {
+                if (ToCastle != hoverCastle)
+                {
+                    if(ToCastle)
+                        ToCastle.DeactiveSelector();
+                    if (hoverCastle == FromCastle)
+                        return;
+                    ToCastle = hoverCastle;
+                    ToCastle.ActivateToSelector();
+                }
+            }
+        }
+
 	}
 
     public void OnCastleClick(CastleController castle) { 
@@ -24,28 +63,36 @@ public class InputController : MonoBehaviour {
         if(!castle)
             return;
 
-        switch (IsSecondClick)
+        switch (IsFirstClicked)
         {
             case true:
-                IsSecondClick = false;
-                SecondSelectCastle = castle;
+                ToCastle = castle;
                 //ToDo - Server로 공격정보 보내기
-                // NetworkController.Attack(FirstSelectCastle.Id, SecondSelectCastle.Id);
-                FirstSelectCastle.ActiveSelector();
-                SecondSelectCastle.ActiveSelector();
-
+                // if(FromCastle != ToCastle)
+                //      NetworkController.Attack(FirstSelectCastle.Id, SecondSelectCastle.Id);
+                FromCastle.DeactiveSelector();
+                ToCastle.DeactiveSelector();
+                IsFirstClicked = false;
+                FromCastle = null;
+                ToCastle = null;
                 break;
             case false:
-                IsSecondClick = true;
-                FirstSelectCastle = castle;
-                FirstSelectCastle.HoverSelector();
+                FromCastle = castle;
+                FromCastle.ActivateFromSelector();
+                IsFirstClicked = true;
                 break;
         }
     }
 
     public void OnBackgroundClick()
-    {   
-        FirstSelectCastle = null;
-        SecondSelectCastle = null;
+    {
+        IsFirstClicked = false;
+        if(FromCastle)
+            FromCastle.DeactiveSelector();
+        if (ToCastle)
+            ToCastle.DeactiveSelector();
+
+        FromCastle = null;
+        ToCastle = null;
     }
 }

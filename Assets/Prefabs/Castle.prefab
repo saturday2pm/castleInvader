@@ -110,7 +110,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000011825986920}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1800, y: 900, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
@@ -215,6 +215,8 @@ MonoBehaviour:
   UnitCountLabel: {fileID: 114000012866946036}
   CastleSprite: {fileID: 114000014157537412}
   SelectorSprite: {fileID: 114000011432484286}
+  FromSelectorSprite: {fileID: 21300000, guid: 1682bc9f5510ba5459b7ab51d29f8ac2, type: 3}
+  ToSelectorSprite: {fileID: 21300000, guid: dc7b929e7ffdf1c4d8e6c6df3810a3af, type: 3}
 --- !u!114 &114000012866946036
 MonoBehaviour:
   m_ObjectHideFlags: 1

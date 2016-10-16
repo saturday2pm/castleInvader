@@ -8,6 +8,9 @@ public class CastleController : MonoBehaviour
     public UI2DSprite CastleSprite;
     public UI2DSprite SelectorSprite;
 
+    public Sprite FromSelectorSprite;
+    public Sprite ToSelectorSprite;
+
     static InputController InputController;
 
 
@@ -53,15 +56,21 @@ public class CastleController : MonoBehaviour
         }
         InputController.OnCastleClick(this);
     }
-    public void ActiveSelector()
+    public void ActivateToSelector()
     {
-        var selector = GetComponent<UIButton>();
-        selector.SetState(UIButtonColor.State.Pressed, true);
+        var selectorSprite = SelectorSprite.GetComponent<UI2DSprite>();
+        selectorSprite.sprite2D = ToSelectorSprite;
     }
 
-    public void HoverSelector()
+    public void ActivateFromSelector()
     {
-        var selector = GetComponent<UIButton>();
-        selector.SetState(UIButtonColor.State.Hover, true);
+        var selectorSprite = SelectorSprite.GetComponent<UI2DSprite>();
+        selectorSprite.sprite2D = FromSelectorSprite;
+    }
+
+    public void DeactiveSelector()
+    {
+        var selector = SelectorSprite.GetComponent<UI2DSprite>();
+        selector.sprite2D = null;
     }
 }
