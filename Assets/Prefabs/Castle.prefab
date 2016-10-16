@@ -52,8 +52,8 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000010292926462}
   - 114: {fileID: 114000010619830492}
-  - 114: {fileID: 114000012535276274}
   - 65: {fileID: 65000012917371764}
+  - 114: {fileID: 114000012535276274}
   m_Layer: 0
   m_Name: SelectorSprite
   m_TagString: Untagged
@@ -142,7 +142,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 100, y: 100, z: 0}
+  m_Size: {x: 60, y: 60, z: 0}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &114000010619830492
 MonoBehaviour:
@@ -241,7 +241,11 @@ MonoBehaviour:
   pressedSprite2D: {fileID: 0}
   disabledSprite2D: {fileID: 0}
   pixelSnap: 0
-  onClick: []
+  onClick:
+  - mTarget: {fileID: 114000012436688526}
+    mMethodName: OnClick
+    mParameters: []
+    oneShot: 0
 --- !u!114 &114000012866946036
 MonoBehaviour:
   m_ObjectHideFlags: 1
