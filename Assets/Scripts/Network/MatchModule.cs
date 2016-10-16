@@ -53,12 +53,8 @@ public class MatchModule : NetworkModule
     private void OnMatchSuccess(MatchSuccess matchData)
     {
         LastSuccessMatch = matchData;
-        //for local test
-        if (Interlocked.Increment(ref connectCount) > 1)
-        {
-            Close();
-            SceneManager.LoadScene("GameScene");
-        }
+        Close();
+        SceneManager.LoadScene("GameScene");
     }
 }
 
