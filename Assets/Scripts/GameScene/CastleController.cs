@@ -6,6 +6,13 @@ public class CastleController : MonoBehaviour
 {
     public UILabel UnitCountLabel;
     public UI2DSprite CastleSprite;
+    public UI2DSprite SelectorSprite;
+
+    public Sprite FromSelectorSprite;
+    public Sprite ToSelectorSprite;
+
+    static InputController InputController;
+
 
     int id = -1;
     public int Id { get { return id; } }
@@ -25,9 +32,45 @@ public class CastleController : MonoBehaviour
         int rectSize = (int)(_size * 2.0f);
         CastleSprite.width = rectSize;
         CastleSprite.height = rectSize;
+        SelectorSprite.width = rectSize;
+        SelectorSprite.height = rectSize;
 
         UnitCountLabel.text = _unitCount.ToString();
         float labelYPos = (CastleSprite.height + UnitCountLabel.height) * 0.5f;
         UnitCountLabel.transform.localPosition = new Vector3(0, labelYPos, 0);
+    }
+
+    public void OnClick()
+    {
+        if (!InputController)
+        {
+            var obj = GameObject.FindGameObjectWithTag("InputController");
+            if(obj)
+            {
+                InputController = obj.GetComponent<InputController>();
+                if(!InputController)
+                {
+                    Debug.Log("InputController is Missing!");
+                }
+            }
+        }
+        InputController.OnCastleClick(this);
+    }
+    public void ActivateToSelector()
+    {
+        var selectorSprite = SelectorSprite.GetComponent<UI2DSprite>();
+        selectorSprite.sprite2D = ToSelectorSprite;
+    }
+
+    public void ActivateFromSelector()
+    {
+        var selectorSprite = SelectorSprite.GetComponent<UI2DSprite>();
+        selectorSprite.sprite2D = FromSelectorSprite;
+    }
+
+    public void DeactiveSelector()
+    {
+        var selector = SelectorSprite.GetComponent<UI2DSprite>();
+        selector.sprite2D = null;
     }
 }

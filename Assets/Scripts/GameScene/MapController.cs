@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Simulator;
 using ObjectPool;
+using System;
+using System.Linq;
 
 public class MapController : MonoBehaviour
 {
@@ -93,5 +95,22 @@ public class MapController : MonoBehaviour
             unitPool.push(targetObject);
             units.Remove(_targetId);
         }
+    }
+
+    public CastleController GetCastleByWorldPos(Vector3 pos)
+    {
+        CastleController targetCastle = null;
+        Camera cam = NGUITools.FindCameraForLayer(gameObject.layer);
+        Vector3 worldPos = cam.ScreenToWorldPoint(pos);
+        var matchingCastle = castles.Where(castle => Vector3.Distance(castle.Value.transform.position, worldPos) <= 0.1).OrderBy(castle => Vector3.Distance(castle.Value.transform.position, worldPos)).ToDictionary(castle => castle.Key, castle => castle.Value);
+        foreach (int id in matchingCastle.Keys)
+        {
+            if (!targetCastle)
+            {
+                targetCastle = matchingCastle[id];
+                break;
+            }
+        }
+        return targetCastle;
     }
 }
