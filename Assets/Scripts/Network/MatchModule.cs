@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class MatchModule : NetworkModule
 {
+    public string MatchHost;
     public static int CurrentPlayerId { get; set; }
     public static MatchSuccess LastSuccessMatch { get; set; }
     public delegate void ConnectionChanged();
@@ -13,12 +14,12 @@ public class MatchModule : NetworkModule
 
     int connectCount = 0;
 
-    void Start()
+    protected override void OnStart()
     {
         CurrentPlayerId = new Random().Next(1000);
         LastSuccessMatch = null;
-        Connect("ws://localhost:9916/mmaker?version=" + ProtocolVersion.version);
-        PacketHelper.AddHandler<MatchSuccess>(OnMatchSuccess);
+        Connect("ws://" + MatchHost + "/mmaker?version=" + ProtocolVersion.version);
+        AddHandler<MatchSuccess>(OnMatchSuccess);
     }
 
     public bool RequestMatch()
@@ -52,9 +53,9 @@ public class MatchModule : NetworkModule
         return true;
     }
 
-    protected override void OnOpen(object sender, EventArgs e)
+    protected override void OnOpen()
     {
-        base.OnOpen(sender, e);
+        base.OnOpen();
         OnConnected();
     }
 

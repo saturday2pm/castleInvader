@@ -1,22 +1,23 @@
 ﻿using ProtocolCS;
 using System.Linq;
 using UnityEngine.SceneManagement;
-using WebSocketSharp;
-using System;
 
 class SessionModule : NetworkModule
 {
     public GameController GameController;
     public MatchSuccess MatchData { get; set; }
 
-    void Start()
+    protected override void OnStart()
     {
         MatchData = MatchModule.LastSuccessMatch;
-        Connect(ProtocolCS.UriBuilder.Create(MatchData.gameServerAddress, MatchData.senderId.ToString(), MatchData.matchToken));
+        if (MatchData == null)
+            return;
 
-        PacketHelper.AddHandler<StartGame>(OnStartGame);
-        PacketHelper.AddHandler<CancelGame>(OnCancelGame);
-        PacketHelper.AddHandler<Frame>(OnFrameUpdate);
+        Connect(UriBuilder.Create(MatchData.gameServerAddress, MatchData.senderId.ToString(), MatchData.matchToken));
+
+        AddHandler<StartGame>(OnStartGame);
+        AddHandler<CancelGame>(OnCancelGame);
+        AddHandler<Frame>(OnFrameUpdate);
     }
 
     public bool RequestJoinGame()
@@ -30,7 +31,7 @@ class SessionModule : NetworkModule
         return true;
     }
 
-    protected override void OnOpen(object sender, EventArgs e)
+    protected override void OnOpen()
     {
         RequestJoinGame();  
     }

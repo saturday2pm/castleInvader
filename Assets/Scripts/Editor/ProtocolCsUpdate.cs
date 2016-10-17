@@ -11,7 +11,7 @@ public class UpdateProtocolCS : MonoBehaviour
         System.Net.WebClient wc = new System.Net.WebClient();
 
         ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => { return true; };
-        wc.DownloadFile("https://github.com/saturday2pm/ProtocolCS/blob/release/ProtocolCS.dll?raw=true",
+        wc.DownloadFile("https://s3.ap-northeast-2.amazonaws.com/st2pm/Debug/ProtocolCS.dll",
             Application.dataPath + "/Plugins/protocolCS/ProtocolCS.dll");
 
         AssetDatabase.ImportAsset(Application.dataPath + "/Plugins/protocolCS/ProtocolCS.dll", ImportAssetOptions.ForceUpdate);

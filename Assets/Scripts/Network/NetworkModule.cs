@@ -2,6 +2,7 @@
 using ProtocolCS;
 using WebSocketSharp;
 using UnityEditor;
+using System;
 
 public class NetworkModule : MonoBehaviour
 {
@@ -12,7 +13,15 @@ public class NetworkModule : MonoBehaviour
             return webSocketClient.IsAlive;
         }
     }
+
+    PacketHelper packetHelper = new PacketHelper();
     WebSocket webSocketClient;
+
+    void Start()
+    {
+        MainThreadDispatcher.Init();
+        OnStart();
+    }
 
     // Use this for initialization
     public void Connect(string url)
@@ -20,9 +29,9 @@ public class NetworkModule : MonoBehaviour
         webSocketClient = new WebSocket(url);
         webSocketClient.ConnectAsync();
 
-        webSocketClient.OnOpen += OnOpen;
-        webSocketClient.OnMessage += OnMessage; ;
-        webSocketClient.OnClose += OnClose;    
+        webSocketClient.OnOpen += Ws_OnOpen;
+        webSocketClient.OnMessage += Ws_OnMessage; ;
+        webSocketClient.OnClose += Ws_OnClose;
     }
 
     public void Close()
@@ -32,18 +41,32 @@ public class NetworkModule : MonoBehaviour
 
     void Update()
     {
-        PacketHelper.Flush();
+        packetHelper.Flush();
     }
 
     public void Send<T>(T packet) where T : PacketBase
     {
         webSocketClient.SendAsync(Serializer.ToJson(packet),
-            x => {
-                if(x)
-                    OnSendSuccess(packet);
-                else
-                    OnSendFail(packet);
+            x =>
+            {
+                    MainThreadDispatcher.Queue(() =>
+                    {
+                        if (x)
+                            OnSendSuccess(packet);
+                        else
+                            OnSendFail(packet);
+                    });
             });
+    }
+
+    public void AddHandler<T>(Action<T> func) where T : PacketBase
+    {
+        packetHelper.AddHandler(func);
+    }
+
+    protected virtual void OnStart()
+    {
+
     }
 
     protected virtual void OnSendSuccess<T>(T successPacket) where T : PacketBase
@@ -56,18 +79,36 @@ public class NetworkModule : MonoBehaviour
         Debug.Log("Send Failed : " + Serializer.ToJson(failedPacket));
     }
 
-    protected virtual void OnClose(object sender, CloseEventArgs e)
+    protected virtual void OnClose()
     {
     }
 
-    protected virtual void OnOpen(object sender, System.EventArgs e)
+    protected virtual void OnOpen()
     {
     }
 
-    private void OnMessage(object sender, MessageEventArgs e)
+    private void OnMessage(string message)
     {
-        Debug.Log("Recieve Message : " + e.Data.ToString());
-        PacketHelper.PushPacket(e.Data);
+        Debug.Log("Recieve Message : " + message);
+        packetHelper.PushPacket(message);
+    }
+
+    private void Ws_OnOpen(object sender, EventArgs e)
+    {
+        MainThreadDispatcher.Queue(OnOpen);
+    }
+
+    private void Ws_OnClose(object sender, EventArgs e)
+    {
+        MainThreadDispatcher.Queue(OnClose);
+    }
+
+    private void Ws_OnMessage(object sender, MessageEventArgs e)
+    {
+        MainThreadDispatcher.Queue(()=> 
+        {
+            OnMessage(e.Data.ToString());
+        });
     }
 }
 

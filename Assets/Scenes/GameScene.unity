@@ -378,9 +378,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MapController: {fileID: 1532008644}
-  PlayerCount: 0
-  PlayFrame: 0
-  IsPlayWithoutNetwork: 0
+  PlayerCount: 5
+  PlayFrame: 20
 --- !u!1 &1320759670
 GameObject:
   m_ObjectHideFlags: 0
