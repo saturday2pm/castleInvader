@@ -143,6 +143,7 @@ namespace Simulator
 
 				Owner = unit.Owner;
 				Owner.AddCastle(this);
+                EndPoint.Clear();
 			}
 		}
 

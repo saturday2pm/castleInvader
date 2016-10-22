@@ -3,11 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using Simulator;
 
+
 public class InputController : MonoBehaviour {
 
     CastleController FromCastle;
     CastleController ToCastle;
     bool IsFirstClicked = false;
+
+    public delegate void MoveDelegate(int src, int dst);
+    public delegate void UpgradeDelegate(int target);
+
+    public MoveDelegate OnMove { get; set; }
+    public UpgradeDelegate OnUpgrade { get; set; }
+
 
     static MapController MapController;
     // Use this for initialization
@@ -17,45 +25,6 @@ public class InputController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (IsFirstClicked)
-        {
-            if (!MapController)
-            {
-                var obj = GameObject.FindGameObjectWithTag("Map");
-                if (obj)
-                {
-                    MapController = obj.GetComponent<MapController>();
-                    if (!MapController)
-                    {
-                        Debug.Log("MapController is Missing!");
-                    }
-                }
-            }
-
-            Vector3 mousePos = Input.mousePosition;
-            CastleController hoverCastle = MapController.GetCastleByWorldPos(mousePos);
-            if (!hoverCastle)
-            {
-                if (ToCastle)
-                {
-                    ToCastle.DeactiveSelector();
-                    ToCastle = null;
-                }
-            }
-            else
-            {
-                if (ToCastle != hoverCastle)
-                {
-                    if(ToCastle)
-                        ToCastle.DeactiveSelector();
-                    if (hoverCastle == FromCastle)
-                        return;
-                    ToCastle = hoverCastle;
-                    ToCastle.ActivateToSelector();
-                }
-            }
-        }
-
 	}
 
     public void OnCastleClick(CastleController castle) { 
@@ -67,9 +36,8 @@ public class InputController : MonoBehaviour {
         {
             case true:
                 ToCastle = castle;
-                //ToDo - Server로 공격정보 보내기
-                // if(FromCastle != ToCastle)
-                //      NetworkController.Attack(FirstSelectCastle.Id, SecondSelectCastle.Id);
+                if (OnMove != null)
+                    OnMove(FromCastle.Id, ToCastle.Id);
                 FromCastle.DeactiveSelector();
                 ToCastle.DeactiveSelector();
                 IsFirstClicked = false;
@@ -77,6 +45,7 @@ public class InputController : MonoBehaviour {
                 ToCastle = null;
                 break;
             case false:
+                //분기 : 첫번째 클릭한 캐슬이 사용자의 성인지
                 FromCastle = castle;
                 FromCastle.ActivateFromSelector();
                 IsFirstClicked = true;
@@ -84,7 +53,22 @@ public class InputController : MonoBehaviour {
         }
     }
 
-    public void OnBackgroundClick()
+    public void OnCastleHover(bool isHover, CastleController castle)
+    {
+        if (!IsFirstClicked || FromCastle == castle)
+            return;
+
+        if(isHover)
+        {
+            castle.ActivateToSelector();
+        }
+        else
+        {
+            castle.DeactiveSelector();
+        }
+    }
+
+public void OnBackgroundClick()
     {
         IsFirstClicked = false;
         if(FromCastle)

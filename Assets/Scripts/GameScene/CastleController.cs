@@ -13,15 +13,22 @@ public class CastleController : MonoBehaviour
 
     static InputController InputController;
 
-
     int id = -1;
     public int Id { get { return id; } }
 
     public bool Init(int _id, Vector2 _position, int _unitCount, float _size, Color _color)
     {
+        if(InputController == null)
+        {
+            InputController = GameObject.FindObjectOfType<InputController>();
+        }
+
+        var button = SelectorSprite.GetComponent<UIButton>();
+
         id = _id;
         transform.localPosition = new Vector3(_position.x, _position.y, 0);
         UpdateCastle(_unitCount, _size, _color);
+
         return true;
     }
 
@@ -40,22 +47,16 @@ public class CastleController : MonoBehaviour
         UnitCountLabel.transform.localPosition = new Vector3(0, labelYPos, 0);
     }
 
-    public void OnClick()
+    void OnClick()
     {
-        if (!InputController)
-        {
-            var obj = GameObject.FindGameObjectWithTag("InputController");
-            if(obj)
-            {
-                InputController = obj.GetComponent<InputController>();
-                if(!InputController)
-                {
-                    Debug.Log("InputController is Missing!");
-                }
-            }
-        }
         InputController.OnCastleClick(this);
     }
+
+    void OnHover(bool isOver)
+    {
+        InputController.OnCastleHover(isOver, this);
+    }
+
     public void ActivateToSelector()
     {
         var selectorSprite = SelectorSprite.GetComponent<UI2DSprite>();
@@ -72,5 +73,14 @@ public class CastleController : MonoBehaviour
     {
         var selector = SelectorSprite.GetComponent<UI2DSprite>();
         selector.sprite2D = null;
+    }
+
+    public override bool Equals(object o)
+    {
+        CastleController obj = o as CastleController;
+        if (!obj)
+            return false;
+
+        return this.Id == obj.Id;
     }
 }

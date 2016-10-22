@@ -38,13 +38,27 @@ class SessionModule : NetworkModule
 
     private void OnStartGame(StartGame _startData)
     {
-        var playerObjects = _startData.players.ToList().ConvertAll(x => {
-            return new NetworkAIPlayerObject()
+        var playerObjects = _startData.players.ToList().ConvertAll(x => 
+        {
+            Simulator.Player player;
+            if(x.id == MatchData.senderId)
             {
-                Id = x.id,
-                Name = x.name,
-            };
-        }).Cast<Simulator.Player>().ToList();
+                player = new NetworkUserPlayerObject()
+                {
+                    Id = x.id,
+                    Name = x.name,
+                };
+            }
+            else
+            {
+                player = new NetworkAIPlayerObject()
+                {
+                    Id = x.id,
+                    Name = x.name,
+                };
+            }
+            return player;
+        }).ToList();
 
         GameController.BeginPlay(playerObjects, _startData.seed);
 

@@ -52,8 +52,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000010292926462}
   - 114: {fileID: 114000010619830492}
-  - 65: {fileID: 65000012917371764}
-  - 114: {fileID: 114000012535276274}
   m_Layer: 0
   m_Name: SelectorSprite
   m_TagString: Untagged
@@ -70,6 +68,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 4000012953135026}
   - 114: {fileID: 114000012436688526}
+  - 65: {fileID: 65000010660854360}
   m_Layer: 0
   m_Name: Castle
   m_TagString: Untagged
@@ -132,12 +131,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4000012953135026}
   m_RootOrder: 0
---- !u!65 &65000012917371764
+--- !u!65 &65000010660854360
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011752356590}
+  m_GameObject: {fileID: 1000011825986920}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
@@ -217,35 +216,6 @@ MonoBehaviour:
   SelectorSprite: {fileID: 114000010619830492}
   FromSelectorSprite: {fileID: 21300000, guid: 1682bc9f5510ba5459b7ab51d29f8ac2, type: 3}
   ToSelectorSprite: {fileID: 21300000, guid: dc7b929e7ffdf1c4d8e6c6df3810a3af, type: 3}
---- !u!114 &114000012535276274
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011752356590}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fdca5042b1d12a4890ec1bd4f04290d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tweenTarget: {fileID: 0}
-  hover: {r: 0.88235295, g: 0.78431374, b: 0.5882353, a: 1}
-  pressed: {r: 0.7176471, g: 0.6392157, b: 0.48235294, a: 1}
-  disabledColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  duration: 0.2
-  dragHighlight: 0
-  hoverSprite: 
-  pressedSprite: 
-  disabledSprite: 
-  hoverSprite2D: {fileID: 0}
-  pressedSprite2D: {fileID: 0}
-  disabledSprite2D: {fileID: 0}
-  pixelSnap: 0
-  onClick:
-  - mTarget: {fileID: 114000012436688526}
-    mMethodName: OnClick
-    mParameters: []
-    oneShot: 0
 --- !u!114 &114000012866946036
 MonoBehaviour:
   m_ObjectHideFlags: 1

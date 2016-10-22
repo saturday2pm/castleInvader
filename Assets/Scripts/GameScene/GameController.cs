@@ -33,9 +33,19 @@ public class GameController : MonoBehaviour
             List<Simulator.Player> testPlayers = new List<Simulator.Player>();
             for (int i = 0; i < PlayerCount; i++)
             {
-                var player = new AIPlayerObject();
+                Simulator.Player player;
+                if (i == 0)
+                {
+                    player = new SingleUserPlayerObject();
+                    player.Name = "User";
+                }
+                else
+                {
+                    player = new AIPlayerObject();
+                    player.Name = "AI" + player.Id.ToString();
+                }
+
                 player.Id = i + 1;
-                player.Name = "AI" + player.Id.ToString();
                 testPlayers.Add(player);
             }
             BeginPlay(testPlayers, -1);
