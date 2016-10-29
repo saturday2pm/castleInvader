@@ -135,7 +135,7 @@ public class GameController : MonoBehaviour
             if (castle.Owner != null)
             {
                 playerColor = PlayerColorSelector.GetColorById(castle.Owner.Id);
-                isUserCastle = castle.Owner is SingleUserPlayerObject;
+                isUserCastle = castle.Owner.IsUser;
             }
             castleView.UpdateCastle(castle.UnitNum, castle.Radius, playerColor, castle.IsUpgradable, isUserCastle);
         }

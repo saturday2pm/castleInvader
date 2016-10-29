@@ -12,7 +12,6 @@ public class NetworkPlayerObject : Simulator.Player
 
     public override void Init(Match match)
     {
-
     }
 
     public override void Update(Match _match)

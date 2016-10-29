@@ -10,6 +10,8 @@ namespace Simulator
 		public List<Castle> OwnCastles { get { return ownCastles; } private set { ownCastles = value; } }
         public int Id { get; set; }
         public string Name { get; set; }
+        protected bool bUser = false;
+        public bool IsUser { get { return bUser; } }
 
         bool isGoingToEnd = false;
         public bool IsGoingToEnd { get { return isGoingToEnd; } set { value = isGoingToEnd; } }

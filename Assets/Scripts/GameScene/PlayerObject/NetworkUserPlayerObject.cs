@@ -12,7 +12,9 @@ class NetworkUserPlayerObject : NetworkPlayerObject
     
     public override void Init(Match match)
     {
-        if(!InputController)
+        bUser = true;
+
+        if (!InputController)
         {
             InputController = GameObject.FindObjectOfType<InputController>();
         }

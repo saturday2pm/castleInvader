@@ -70,7 +70,7 @@ public class MapController : MonoBehaviour
         if(!castles.ContainsKey(_castle.Id))
         {
             int castleOwnerId = 0;
-            bool isUserCastle = _castle.Owner is SingleUserPlayerObject;
+            bool isUserCastle = _castle.Owner.IsUser;
             if (_castle.Owner != null)
                 castleOwnerId = _castle.Owner.Id;
 

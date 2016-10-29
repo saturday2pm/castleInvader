@@ -6,7 +6,7 @@ public class NetworkAIPlayerObject : NetworkPlayerObject
 {
     public override void Init(Match match)
     {
-
+       
     }
 
     public override void Update(Match _match)

@@ -11,6 +11,8 @@ class SingleUserPlayerObject : Simulator.Player
 
     public override void Init(Match _match)
     {
+        bUser = true;
+
         if (!InputController)
         {
             InputController = GameObject.FindObjectOfType<InputController>();
@@ -36,7 +38,6 @@ class SingleUserPlayerObject : Simulator.Player
             TypeSwitch.Case<MoveEvent>(x => { OnMove(x, _match); }),
             TypeSwitch.Case<UpgradeEvent>(x => { OnUpgrade(x, _match); }),
             TypeSwitch.Default(() => { OnUnhandledEvent(_match); }));
-            
     }
 
     private void OnUnhandledEvent(Match _match)
