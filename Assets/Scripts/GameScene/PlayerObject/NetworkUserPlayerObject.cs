@@ -36,6 +36,15 @@ class NetworkUserPlayerObject : NetworkPlayerObject
 
     void OnUpgradeInput(int target)
     {
-
+        var castle = OwnCastles.Find(c => c.Id == target);
+        if (castle != null)
+        {
+            OutputEvent.Add(new UpgradeEvent()
+            {
+                castle = castle.ToProtocolCastle(),
+                upgradeTo = (CastleType)castle.Level + 1,
+                player = new ProtocolCS.Player() { id = Id },
+            });
+        }
     }
 }
