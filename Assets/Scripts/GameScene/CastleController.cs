@@ -7,6 +7,7 @@ public class CastleController : MonoBehaviour
     public UILabel UnitCountLabel;
     public UI2DSprite CastleSprite;
     public UI2DSprite SelectorSprite;
+    public UILabel UpgradeButton;
 
     public Sprite FromSelectorSprite;
     public Sprite ToSelectorSprite;
@@ -27,12 +28,12 @@ public class CastleController : MonoBehaviour
 
         Id = _id;
         transform.localPosition = new Vector3(_position.x, _position.y, 0);
-        UpdateCastle(_unitCount, _size, _color);
+        UpdateCastle(_unitCount, _size, _color, false);
 
         return true;
     }
 
-    public void UpdateCastle(int _unitCount, float _size, Color _color)
+    public void UpdateCastle(int _unitCount, float _size, Color _color, bool _isUpgradable)
     {
         CastleSprite.color = _color;
 
@@ -45,6 +46,12 @@ public class CastleController : MonoBehaviour
         UnitCountLabel.text = _unitCount.ToString();
         float labelYPos = (CastleSprite.height + UnitCountLabel.height) * 0.5f;
         UnitCountLabel.transform.localPosition = new Vector3(0, labelYPos, 0);
+        UpgradeButton.transform.localPosition = new Vector3(0, labelYPos - UnitCountLabel.height - CastleSprite.height, 0);
+
+        if (_isUpgradable)
+            ShowUpgradeButton();
+        else
+            HideUpgradeButton();
     }
 
     void OnPress(bool isDown)
@@ -80,6 +87,21 @@ public class CastleController : MonoBehaviour
     {
         var selector = SelectorSprite.GetComponent<UI2DSprite>();
         selector.sprite2D = null;
+    }
+
+    public void OnUpgrade()
+    {
+        InputController.OnCastleUpgrade(this);
+    }
+
+    public void ShowUpgradeButton()
+    {
+        UpgradeButton.enabled = true;
+    }
+
+    public void HideUpgradeButton()
+    {
+        UpgradeButton.enabled = false;
     }
 
     public override bool Equals(object o)

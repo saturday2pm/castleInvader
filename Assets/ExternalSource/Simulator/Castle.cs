@@ -155,5 +155,13 @@ namespace Simulator
 			unitNum -= Cost;
 			Level++;
 		}
+
+        public ProtocolCS.Castle ToProtocolCastle()
+        {
+            ProtocolCS.Castle castle = new ProtocolCS.Castle();
+            castle.id = Id;
+            castle.type = (ProtocolCS.CastleType)Level;
+            return castle;
+        }
     }
 }

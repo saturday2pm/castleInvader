@@ -36,6 +36,7 @@ class SingleUserPlayerObject : Simulator.Player
             TypeSwitch.Case<MoveEvent>(x => { OnMove(x, _match); }),
             TypeSwitch.Case<UpgradeEvent>(x => { OnUpgrade(x, _match); }),
             TypeSwitch.Default(() => { OnUnhandledEvent(_match); }));
+            
     }
 
     private void OnUnhandledEvent(Match _match)
@@ -45,7 +46,9 @@ class SingleUserPlayerObject : Simulator.Player
 
     private void OnUpgrade(UpgradeEvent _event, Match _match)
     {
-        throw new NotImplementedException();
+        int castleId = _event.castle.id;
+        Simulator.Castle castle = OwnCastles.Find(Castle => Castle.Id == castleId);
+        castle.Upgrade();
     }
 
     private void OnMove(MoveEvent _event, Match _match)
@@ -70,7 +73,16 @@ class SingleUserPlayerObject : Simulator.Player
 
     private void OnUpgradeInput(int target)
     {
-        throw new NotImplementedException();
+        UpgradeEvent e = new UpgradeEvent();
+        Simulator.Castle c = OwnCastles.Find(castle => castle.Id == target);
+        if (c != null)
+        {
+            e.castle = c.ToProtocolCastle();
+            e.upgradeTo = (ProtocolCS.CastleType)c.Level;
+            e.player = ToProtocolPlayer();
+            InputEvent.Add(e);
+        }
+        
     }
 
     private void OnMoveInput(int src, int dst)
@@ -84,5 +96,13 @@ class SingleUserPlayerObject : Simulator.Player
                 player = new ProtocolCS.Player() { id = Id },
             });
         }
+    }
+
+    public ProtocolCS.Player ToProtocolPlayer()
+    {
+        ProtocolCS.Player player = new ProtocolCS.Player();
+        player.id = Id;
+        player.name = Name;
+        return player;
     }
 }
