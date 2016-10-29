@@ -36,7 +36,7 @@ public class MapController : MonoBehaviour
         transform.localPosition = new Vector3(size.x * -0.5f, size.y * -0.5f, 0.0f);
     }
 
-    public void CreateCastleObject(int _id, Vector2 _position, int _unitCount, float _size, int _ownerIdx)
+    public void CreateCastleObject(int _id, Vector2 _position, int _unitCount, float _size, int _ownerIdx, bool _isUserCastle)
     {
         var castleObject = castlePool.pop();
         var castleController = castleObject.GetComponent<CastleController>();
@@ -46,7 +46,7 @@ public class MapController : MonoBehaviour
             castleObject.transform.localScale = Vector3.one;
             castleObject.SetActive(true);
             NGUITools.SetActive(castleObject, true);
-            castleController.Init(_id, _position, _unitCount, _size, PlayerColorSelector.GetColorById(_ownerIdx));
+            castleController.Init(_id, _position, _unitCount, _size, PlayerColorSelector.GetColorById(_ownerIdx), _isUserCastle);
             castles[_id] = castleController;
         }
     }
@@ -70,10 +70,11 @@ public class MapController : MonoBehaviour
         if(!castles.ContainsKey(_castle.Id))
         {
             int castleOwnerId = 0;
+            bool isUserCastle = _castle.Owner is SingleUserPlayerObject;
             if (_castle.Owner != null)
                 castleOwnerId = _castle.Owner.Id;
 
-            CreateCastleObject(_castle.Id, new Vector2(_castle.Pos.X, _castle.Pos.Y), _castle.UnitNum, _castle.Radius, castleOwnerId);
+            CreateCastleObject(_castle.Id, new Vector2(_castle.Pos.X, _castle.Pos.Y), _castle.UnitNum, _castle.Radius, castleOwnerId, isUserCastle);
         }
         return castles[_castle.Id];
     }

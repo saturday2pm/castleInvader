@@ -16,8 +16,9 @@ public class CastleController : MonoBehaviour
 
     //int id = -1;
     public int Id; //{ get { return id; } }
+    public bool IsUserCastle { get; set; }
 
-    public bool Init(int _id, Vector2 _position, int _unitCount, float _size, Color _color)
+    public bool Init(int _id, Vector2 _position, int _unitCount, float _size, Color _color, bool _isUserCastle)
     {
         if (InputController == null)
         {
@@ -28,14 +29,15 @@ public class CastleController : MonoBehaviour
 
         Id = _id;
         transform.localPosition = new Vector3(_position.x, _position.y, 0);
-        UpdateCastle(_unitCount, _size, _color, false);
+        UpdateCastle(_unitCount, _size, _color, false, _isUserCastle);
 
         return true;
     }
 
-    public void UpdateCastle(int _unitCount, float _size, Color _color, bool _isUpgradable)
+    public void UpdateCastle(int _unitCount, float _size, Color _color, bool _isUpgradable, bool _isUserCastle)
     {
         CastleSprite.color = _color;
+        IsUserCastle = _isUserCastle;
 
         int rectSize = (int)(_size * 2.0f);
         CastleSprite.width = rectSize;
@@ -48,7 +50,7 @@ public class CastleController : MonoBehaviour
         UnitCountLabel.transform.localPosition = new Vector3(0, labelYPos, 0);
         UpgradeButton.transform.localPosition = new Vector3(0, labelYPos - UnitCountLabel.height - CastleSprite.height, 0);
 
-        if (_isUpgradable)
+        if (_isUpgradable && _isUserCastle)
             ShowUpgradeButton();
         else
             HideUpgradeButton();

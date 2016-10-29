@@ -17,7 +17,7 @@ public class InputController : MonoBehaviour {
     public MoveDelegate OnMove { get; set; }
     public UpgradeDelegate OnUpgrade { get; set; }
 
-    public LineRenderer Indicator;
+    public LineRenderer DragIndicator;
     static MapController MapController;
 
     Vector3 DragSrc;
@@ -39,12 +39,16 @@ public class InputController : MonoBehaviour {
         if (!castle || IsDraging)
             return;
 
-        Indicator.SetWidth(0.1f, 0.1f);
-        DragSrc = castle.transform.localPosition;
-        DragDst = castle.transform.localPosition;
-        FromCastle = castle;
-        FromCastle.ActivateFromSelector();
-        IsDraging = true;
+        if(castle.IsUserCastle)
+        {
+            DragIndicator.SetWidth(0.1f, 0.1f);
+            DragSrc = castle.transform.localPosition;
+            DragDst = castle.transform.localPosition;
+
+            FromCastle = castle;
+            FromCastle.ActivateFromSelector();
+            IsDraging = true;
+        }
     }
 
     public void OnDrag(Vector2 delta)
@@ -53,8 +57,8 @@ public class InputController : MonoBehaviour {
             return;
 
         DragDst += new Vector3(delta.x, delta.y, -1);
-        Indicator.SetPosition(0, DragSrc);
-        Indicator.SetPosition(1, DragDst);
+        DragIndicator.SetPosition(0, DragSrc);
+        DragIndicator.SetPosition(1, DragDst);
     }
 
     public void OnDrop(CastleController castle)
@@ -66,21 +70,9 @@ public class InputController : MonoBehaviour {
         {
             ToCastle = castle;
             OnMove(FromCastle.Id, ToCastle.Id);
-
-            FromCastle.DeactiveSelector();
-            ToCastle.DeactiveSelector();
-
-            IsFirstClicked = false;
-            FromCastle = null;
-            ToCastle = null;
         }
 
-        DragSrc = Vector3.zero;
-        DragDst = Vector3.zero;
-
-        Indicator.SetPosition(0, DragSrc);
-        Indicator.SetPosition(1, DragDst);
-        IsDraging = false;
+        ResetDragIndicator();
     }
 
     public void OnCastleUpgrade(CastleController castle)
@@ -107,8 +99,12 @@ public class InputController : MonoBehaviour {
 
     public void OnBackgroundClick()
     {
-        IsFirstClicked = false;
-        if(FromCastle)
+        ResetDragIndicator();
+    }
+
+    void ResetDragIndicator()
+    {
+        if (FromCastle)
             FromCastle.DeactiveSelector();
         if (ToCastle)
             ToCastle.DeactiveSelector();
@@ -116,15 +112,12 @@ public class InputController : MonoBehaviour {
         FromCastle = null;
         ToCastle = null;
 
-        if (IsDraging)
-        {
-            DragSrc = Vector3.zero;
-            DragDst = Vector3.zero;
+        DragSrc = Vector3.zero;
+        DragDst = Vector3.zero;
 
-            Indicator.SetPosition(0, DragSrc);
-            Indicator.SetPosition(1, DragDst);
-            IsDraging = false;
-        }
+        DragIndicator.SetPosition(0, DragSrc);
+        DragIndicator.SetPosition(1, DragDst);
+        IsDraging = false;
     }
 }
 
