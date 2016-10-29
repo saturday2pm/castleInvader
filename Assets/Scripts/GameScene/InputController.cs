@@ -53,6 +53,11 @@ public class InputController : MonoBehaviour {
         }
     }
 
+    public void OnCastleUpgrade(CastleController castle)
+    {
+        OnUpgrade(castle.Id);
+    }
+
     public void OnCastleHover(bool isHover, CastleController castle)
     {
         if (!IsFirstClicked || FromCastle == castle)
