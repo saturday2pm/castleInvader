@@ -132,9 +132,12 @@ public class GameController : MonoBehaviour
             var castleView = MapController.GetCastleObject(castle);
             Color playerColor = Color.white;
             if (castle.Owner != null)
+            {
                 playerColor = PlayerColorSelector.GetColorById(castle.Owner.Id);
-
-            castleView.UpdateCastle(castle.UnitNum, castle.Radius, playerColor);
+                TypeSwitch.Do(castle.Owner,
+                    TypeSwitch.Case<SingleUserPlayerObject>(x => { castleView.UpdateCastle(castle.UnitNum, castle.Radius, playerColor, castle.IsUpgradable); }),
+                    TypeSwitch.Default(() => { castleView.UpdateCastle(castle.UnitNum, castle.Radius, playerColor, false); }));
+            }
         }
 
         foreach (var unitQueue in match.Units.Values)

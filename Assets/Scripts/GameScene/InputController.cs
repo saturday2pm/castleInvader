@@ -83,6 +83,11 @@ public class InputController : MonoBehaviour {
         IsDraging = false;
     }
 
+    public void OnCastleUpgrade(CastleController castle)
+    {
+        OnUpgrade(castle.Id);
+    }
+
     public void OnCastleHover(CastleController castle)
     {
         if (!IsDraging || FromCastle == castle)
