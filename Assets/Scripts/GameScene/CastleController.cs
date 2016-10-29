@@ -13,19 +13,19 @@ public class CastleController : MonoBehaviour
 
     static InputController InputController;
 
-    int id = -1;
-    public int Id { get { return id; } }
+    //int id = -1;
+    public int Id; //{ get { return id; } }
 
     public bool Init(int _id, Vector2 _position, int _unitCount, float _size, Color _color)
     {
-        if(InputController == null)
+        if (InputController == null)
         {
             InputController = GameObject.FindObjectOfType<InputController>();
         }
 
         var button = SelectorSprite.GetComponent<UIButton>();
 
-        id = _id;
+        Id = _id;
         transform.localPosition = new Vector3(_position.x, _position.y, 0);
         UpdateCastle(_unitCount, _size, _color);
 
@@ -47,14 +47,21 @@ public class CastleController : MonoBehaviour
         UnitCountLabel.transform.localPosition = new Vector3(0, labelYPos, 0);
     }
 
-    void OnClick()
+    void OnPress(bool isDown)
     {
         InputController.OnCastleClick(this);
     }
 
-    void OnHover(bool isOver)
+    void OnDrag(Vector2 delta)
+    { 
+        InputController.OnDrag(delta);
+        var hoveredCastle = UICamera.currentTouch.current.GetComponent<CastleController>();
+        InputController.OnCastleHover(hoveredCastle);
+    }
+
+    void OnDrop(GameObject go)
     {
-        InputController.OnCastleHover(isOver, this);
+        InputController.OnDrop(this);
     }
 
     public void ActivateToSelector()

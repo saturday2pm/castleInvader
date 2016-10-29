@@ -8,6 +8,7 @@ public class InputController : MonoBehaviour {
 
     CastleController FromCastle;
     CastleController ToCastle;
+    CastleController HoverCastle;
     bool IsFirstClicked = false;
 
     public delegate void MoveDelegate(int src, int dst);
@@ -16,59 +17,90 @@ public class InputController : MonoBehaviour {
     public MoveDelegate OnMove { get; set; }
     public UpgradeDelegate OnUpgrade { get; set; }
 
-
+    public LineRenderer Indicator;
     static MapController MapController;
+
+    Vector3 DragSrc;
+    Vector3 DragDst;
+    bool IsDraging = false;
+
     // Use this for initialization
+
     void Start () {
-	    
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	}
-
-    public void OnCastleClick(CastleController castle) { 
-    
-        if(!castle)
-            return;
-
-        switch (IsFirstClicked)
-        {
-            case true:
-                ToCastle = castle;
-                if (OnMove != null)
-                    OnMove(FromCastle.Id, ToCastle.Id);
-                FromCastle.DeactiveSelector();
-                ToCastle.DeactiveSelector();
-                IsFirstClicked = false;
-                FromCastle = null;
-                ToCastle = null;
-                break;
-            case false:
-                //분기 : 첫번째 클릭한 캐슬이 사용자의 성인지
-                FromCastle = castle;
-                FromCastle.ActivateFromSelector();
-                IsFirstClicked = true;
-                break;
-        }
     }
 
-    public void OnCastleHover(bool isHover, CastleController castle)
+    // Update is called once per frame
+    void Update () {
+
+	}
+
+    public void OnCastleClick(CastleController castle)
     {
-        if (!IsFirstClicked || FromCastle == castle)
+        if (!castle || IsDraging)
             return;
 
-        if(isHover)
+        Indicator.SetWidth(0.1f, 0.1f);
+        DragSrc = castle.transform.localPosition;
+        DragDst = castle.transform.localPosition;
+        FromCastle = castle;
+        FromCastle.ActivateFromSelector();
+        IsDraging = true;
+    }
+
+    public void OnDrag(Vector2 delta)
+    {
+        if (!IsDraging)
+            return;
+
+        DragDst += new Vector3(delta.x, delta.y, -1);
+        Indicator.SetPosition(0, DragSrc);
+        Indicator.SetPosition(1, DragDst);
+    }
+
+    public void OnDrop(CastleController castle)
+    {
+        if (!IsDraging)
+            return;
+
+        if (castle)
         {
-            castle.ActivateToSelector();
+            ToCastle = castle;
+            OnMove(FromCastle.Id, ToCastle.Id);
+
+            FromCastle.DeactiveSelector();
+            ToCastle.DeactiveSelector();
+
+            IsFirstClicked = false;
+            FromCastle = null;
+            ToCastle = null;
         }
-        else
+
+        DragSrc = Vector3.zero;
+        DragDst = Vector3.zero;
+
+        Indicator.SetPosition(0, DragSrc);
+        Indicator.SetPosition(1, DragDst);
+        IsDraging = false;
+    }
+
+    public void OnCastleHover(CastleController castle)
+    {
+        if (!IsDraging || FromCastle == castle)
+            return;
+
+        if(castle)
         {
-            castle.DeactiveSelector();
+            HoverCastle = castle;
+            HoverCastle.ActivateToSelector();
+        }
+        else if(HoverCastle)
+        {
+            HoverCastle.DeactiveSelector();
+            HoverCastle = null;
         }
     }
 
-public void OnBackgroundClick()
+    public void OnBackgroundClick()
     {
         IsFirstClicked = false;
         if(FromCastle)
@@ -78,5 +110,16 @@ public void OnBackgroundClick()
 
         FromCastle = null;
         ToCastle = null;
+
+        if (IsDraging)
+        {
+            DragSrc = Vector3.zero;
+            DragDst = Vector3.zero;
+
+            Indicator.SetPosition(0, DragSrc);
+            Indicator.SetPosition(1, DragDst);
+            IsDraging = false;
+        }
     }
 }
+

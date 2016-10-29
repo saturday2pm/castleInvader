@@ -10,6 +10,7 @@ public class MapController : MonoBehaviour
     public UI2DSprite BgSprite;
     public GameObject UnitPrefab;
     public GameObject CastlePrefab;
+    public InputController InputController;
 
     ObjectPool<GameObject> unitPool;
     ObjectPool<GameObject> castlePool;
@@ -95,5 +96,24 @@ public class MapController : MonoBehaviour
             unitPool.push(targetObject);
             units.Remove(_targetId);
         }
+    }
+
+    void OnPress(bool isDown)
+    {
+        if (isDown)
+            InputController.OnBackgroundClick();
+    }
+
+    void OnDrag(Vector2 delta)
+    {
+        if(UICamera.currentTouch.current == gameObject)
+        {
+            InputController.OnCastleHover(null);
+        }
+    }
+
+    void OnDrop(GameObject go)
+    {
+        InputController.OnDrop(null);
     }
 }
