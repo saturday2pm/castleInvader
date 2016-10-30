@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using ProtocolCS;
 using WebSocketSharp;
-using UnityEditor;
 using System;
 
 public class NetworkModule : MonoBehaviour
