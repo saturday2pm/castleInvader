@@ -282,7 +282,7 @@ MonoBehaviour:
   keepAspectRatio: 0
   aspectRatio: 6.6666665
   keepCrispWhenShrunk: 1
-  mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  mTrueTypeFont: {fileID: 12800000, guid: a6db49e94978ba546bb2e5c1e2902202, type: 3}
   mFont: {fileID: 0}
   mText: Upgrade
   mFontSize: 16
@@ -358,6 +358,7 @@ MonoBehaviour:
   UpgradeButton: {fileID: 114000010787408214}
   FromSelectorSprite: {fileID: 21300000, guid: 1682bc9f5510ba5459b7ab51d29f8ac2, type: 3}
   ToSelectorSprite: {fileID: 21300000, guid: dc7b929e7ffdf1c4d8e6c6df3810a3af, type: 3}
+  Id: 0
 --- !u!114 &114000012866946036
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -396,7 +397,7 @@ MonoBehaviour:
   keepAspectRatio: 0
   aspectRatio: 6
   keepCrispWhenShrunk: 1
-  mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+  mTrueTypeFont: {fileID: 12800000, guid: a6db49e94978ba546bb2e5c1e2902202, type: 3}
   mFont: {fileID: 0}
   mText: 0
   mFontSize: 16

@@ -20,11 +20,7 @@ public class GameController : MonoBehaviour
     void Start()
     {
         //데이터 받기
-        string optionPath = Application.dataPath + "/Resources/" + "Option.json";
-        if (!File.Exists(optionPath))
-            throw new FileLoadException("Option.json is not exist!");
-
-        string optionStr = File.ReadAllText(optionPath);
+        string optionStr = Resources.Load<TextAsset>("Option").text;
         option = JsonConvert.DeserializeObject<MatchOption>(optionStr);
 
         //매치 데이터 없는경우 싱글 게임을 위한 AI 플레이어 생성

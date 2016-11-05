@@ -394,8 +394,7 @@ MonoBehaviour:
   keepAspectRatio: 0
   aspectRatio: 7.387755
   keepCrispWhenShrunk: 1
-  mTrueTypeFont: {fileID: 4028824154787511821, guid: 0000000000000000d000000000000000,
-    type: 0}
+  mTrueTypeFont: {fileID: 12800000, guid: 331712e520c97fd48b738e855cdc690c, type: 3}
   mFont: {fileID: 0}
   mText: CASTLE INVADE
   mFontSize: 60
@@ -492,8 +491,7 @@ MonoBehaviour:
   keepAspectRatio: 0
   aspectRatio: 2
   keepCrispWhenShrunk: 1
-  mTrueTypeFont: {fileID: 3459068928204737762, guid: 0000000000000000d000000000000000,
-    type: 0}
+  mTrueTypeFont: {fileID: 12800000, guid: a6db49e94978ba546bb2e5c1e2902202, type: 3}
   mFont: {fileID: 0}
   mText: MULTI GAME START
   mFontSize: 30
@@ -646,7 +644,7 @@ MonoBehaviour:
   rightType: 1
   bottomType: 1
   topType: 1
-  mAtlas: {fileID: 11400000, guid: f95e07e3d350bf748b0c42b453a69d2e, type: 2}
+  mAtlas: {fileID: 11400000, guid: 2f2473f73b9ca724f9080d6d76009ea2, type: 2}
   mSpriteName: Dark
   mFillCenter: 1
 --- !u!1 &1065647788
@@ -833,8 +831,7 @@ MonoBehaviour:
   keepAspectRatio: 0
   aspectRatio: 2
   keepCrispWhenShrunk: 1
-  mTrueTypeFont: {fileID: 3459068928204737762, guid: 0000000000000000d000000000000000,
-    type: 0}
+  mTrueTypeFont: {fileID: 12800000, guid: a6db49e94978ba546bb2e5c1e2902202, type: 3}
   mFont: {fileID: 0}
   mText: EXIT
   mFontSize: 30
@@ -1072,7 +1069,7 @@ MonoBehaviour:
   rightType: 1
   bottomType: 1
   topType: 1
-  mAtlas: {fileID: 11400000, guid: f95e07e3d350bf748b0c42b453a69d2e, type: 2}
+  mAtlas: {fileID: 11400000, guid: 2f2473f73b9ca724f9080d6d76009ea2, type: 2}
   mSpriteName: Dark
   mFillCenter: 1
 --- !u!114 &1561582405
@@ -1223,7 +1220,7 @@ Transform:
   m_GameObject: {fileID: 1787496856}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.003215434, y: 0.003215434, z: 0.003215434}
+  m_LocalScale: {x: 0.0027173914, y: 0.0027173914, z: 0.0027173914}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 225539854}
@@ -1313,7 +1310,7 @@ MonoBehaviour:
   rightType: 1
   bottomType: 1
   topType: 1
-  mAtlas: {fileID: 11400000, guid: f1289d9a909bfda4e97fbd6af270d511, type: 2}
+  mAtlas: {fileID: 0}
   mSpriteName: Highlight
   mFillCenter: 1
 --- !u!1 &1871591805
@@ -1383,8 +1380,7 @@ MonoBehaviour:
   keepAspectRatio: 0
   aspectRatio: 2
   keepCrispWhenShrunk: 1
-  mTrueTypeFont: {fileID: 3459068928204737762, guid: 0000000000000000d000000000000000,
-    type: 0}
+  mTrueTypeFont: {fileID: 12800000, guid: a6db49e94978ba546bb2e5c1e2902202, type: 3}
   mFont: {fileID: 0}
   mText: SINGLE GAME START
   mFontSize: 30

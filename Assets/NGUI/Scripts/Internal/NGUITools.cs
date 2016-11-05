@@ -54,8 +54,15 @@ static public class NGUITools
 	{
 		get
 		{
+#if !UNITY_4_7
+			if (Application.platform == RuntimePlatform.WebGLPlayer) return false;
+#endif
+#if UNITY_4_7 || UNITY_5_0 || UNITY_5_1 || UNITY_5_2 || UNITY_5_3
 			return Application.platform != RuntimePlatform.WindowsWebPlayer &&
 				Application.platform != RuntimePlatform.OSXWebPlayer;
+#else
+			return true;
+#endif
 		}
 	}
 
@@ -471,17 +478,30 @@ static public class NGUITools
 	/// Add a new child game object.
 	/// </summary>
 
-	static public GameObject AddChild (this GameObject parent) { return AddChild(parent, true); }
+	static public GameObject AddChild (this GameObject parent) { return AddChild(parent, true, -1); }
 
 	/// <summary>
 	/// Add a new child game object.
 	/// </summary>
 
-	static public GameObject AddChild (this GameObject parent, bool undo)
+	static public GameObject AddChild (this GameObject parent, int layer) { return AddChild(parent, true, layer); }
+
+	/// <summary>
+	/// Add a new child game object.
+	/// </summary>
+
+	static public GameObject AddChild (this GameObject parent, bool undo) { return AddChild(parent, undo, -1); }
+
+	/// <summary>
+	/// Add a new child game object.
+	/// </summary>
+
+	static public GameObject AddChild (this GameObject parent, bool undo, int layer)
 	{
 		GameObject go = new GameObject();
 #if UNITY_EDITOR
-		if (undo) UnityEditor.Undo.RegisterCreatedObjectUndo(go, "Create Object");
+		if (undo && !Application.isPlaying)
+			UnityEditor.Undo.RegisterCreatedObjectUndo(go, "Create Object");
 #endif
 		if (parent != null)
 		{
@@ -490,7 +510,8 @@ static public class NGUITools
 			t.localPosition = Vector3.zero;
 			t.localRotation = Quaternion.identity;
 			t.localScale = Vector3.one;
-			go.layer = parent.layer;
+			if (layer == -1) go.layer = parent.layer;
+			else if (layer > -1 && layer < 32) go.layer = layer;
 		}
 		return go;
 	}
@@ -499,11 +520,18 @@ static public class NGUITools
 	/// Instantiate an object and add it to the specified parent.
 	/// </summary>
 
-	static public GameObject AddChild (this GameObject parent, GameObject prefab)
+	static public GameObject AddChild (this GameObject parent, GameObject prefab) { return parent.AddChild(prefab, -1); }
+
+	/// <summary>
+	/// Instantiate an object and add it to the specified parent.
+	/// </summary>
+
+	static public GameObject AddChild (this GameObject parent, GameObject prefab, int layer)
 	{
 		GameObject go = GameObject.Instantiate(prefab) as GameObject;
 #if UNITY_EDITOR
-		UnityEditor.Undo.RegisterCreatedObjectUndo(go, "Create Object");
+		if (!Application.isPlaying)
+			UnityEditor.Undo.RegisterCreatedObjectUndo(go, "Create Object");
 #endif
 		if (go != null && parent != null)
 		{
@@ -512,7 +540,8 @@ static public class NGUITools
 			t.localPosition = Vector3.zero;
 			t.localRotation = Quaternion.identity;
 			t.localScale = Vector3.one;
-			go.layer = parent.layer;
+			if (layer == -1) go.layer = parent.layer;
+			else if (layer > -1 && layer < 32) go.layer = layer;
 		}
 		return go;
 	}
@@ -831,6 +860,8 @@ static public class NGUITools
 				go.name = "UI Root";
 				root.scalingStyle = UIRoot.Scaling.Flexible;
 			}
+
+			root.UpdateScale();
 		}
 
 		// Find the first panel
@@ -891,7 +922,7 @@ static public class NGUITools
 			// Add a panel to the root
 			panel = root.gameObject.AddComponent<UIPanel>();
 #if UNITY_EDITOR
-			UnityEditor.Selection.activeGameObject = panel.gameObject;
+			if (!Application.isPlaying) UnityEditor.Selection.activeGameObject = panel.gameObject;
 #endif
 		}
 
@@ -1845,8 +1876,9 @@ static public class NGUITools
 
 #if UNITY_EDITOR
 	static int mSizeFrame = -1;
-	static System.Reflection.MethodInfo s_GetSizeOfMainGameView;
+	static Func<Vector2> s_GetSizeOfMainGameView;
 	static Vector2 mGameSize = Vector2.one;
+	[System.NonSerialized] static bool mCheckedMainViewFunc = false;
 
 	/// <summary>
 	/// Size of the game view cannot be retrieved from Screen.width and Screen.height when the game view is hidden.
@@ -1860,31 +1892,45 @@ static public class NGUITools
 
 			if (mSizeFrame != frame || !Application.isPlaying)
 			{
+				Profiler.BeginSample("Editor-only GC allocation (NGUITools.screenSize)");
 				mSizeFrame = frame;
 
-				if (s_GetSizeOfMainGameView == null)
+				// There seems to be a Unity 5.4 bug that returns invalid screen size when the mouse is clicked (wtf?) on OSX
+#if !UNITY_EDITOR_OSX
+				if (s_GetSizeOfMainGameView == null && !mCheckedMainViewFunc)
 				{
+					mCheckedMainViewFunc = true;
 					System.Type type = System.Type.GetType("UnityEditor.GameView,UnityEditor");
 
-					// Pre-Unity 5.4
-					s_GetSizeOfMainGameView = type.GetMethod("GetSizeOfMainGameView",
+					// Post-Unity 5.4
+					var methodInfo = type.GetMethod("GetMainGameViewTargetSize",
 						System.Reflection.BindingFlags.Public |
 						System.Reflection.BindingFlags.NonPublic |
 						System.Reflection.BindingFlags.Static);
 
-					// Post-Unity 5.4
-					if (s_GetSizeOfMainGameView == null)
-						s_GetSizeOfMainGameView = type.GetMethod("GetMainGameViewTargetSize",
+					// Pre-Unity 5.4
+					if (methodInfo == null)
+						methodInfo = type.GetMethod("GetSizeOfMainGameView",
 							System.Reflection.BindingFlags.Public |
 							System.Reflection.BindingFlags.NonPublic |
 							System.Reflection.BindingFlags.Static);
+
+					// Create the delegate
+					if (methodInfo != null)
+					{
+						s_GetSizeOfMainGameView = (Func<Vector2>)Delegate.CreateDelegate(typeof(Func<Vector2>), methodInfo);
+					}
+					else Debug.LogWarning("Unable to get the main game view size function");
 				}
 
 				if (s_GetSizeOfMainGameView != null)
 				{
-					mGameSize = (Vector2)s_GetSizeOfMainGameView.Invoke(null, null);
+					mGameSize = s_GetSizeOfMainGameView();
 				}
-				else mGameSize = new Vector2(Screen.width, Screen.height);
+				else
+#endif
+					mGameSize = new Vector2(Screen.width, Screen.height);
+				Profiler.EndSample();
 			}
 			return mGameSize;
 		}
@@ -2285,10 +2331,11 @@ static public class NGUITools
 
 		if (mColorSpace == ColorSpace.Linear)
 		{
-			c.r = Mathf.GammaToLinearSpace(c.r);
-			c.g = Mathf.GammaToLinearSpace(c.g);
-			c.b = Mathf.GammaToLinearSpace(c.b);
-			c.a = Mathf.GammaToLinearSpace(c.a);
+			return new Color(
+				Mathf.GammaToLinearSpace(c.r),
+				Mathf.GammaToLinearSpace(c.g),
+				Mathf.GammaToLinearSpace(c.b),
+				Mathf.GammaToLinearSpace(c.a));
 		}
 		return c;
 	}

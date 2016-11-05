@@ -119,6 +119,27 @@ public class UI2DSprite : UIBasicSprite
 	}
 
 	/// <summary>
+	/// Whether the sprite is going to have a fixed aspect ratio.
+	/// </summary>
+
+	public bool fixedAspect
+	{
+		get
+		{
+			return mFixedAspect;
+		}
+		set
+		{
+			if (mFixedAspect != value)
+			{
+				mFixedAspect = value;
+				mDrawRegion = new Vector4(0f, 0f, 1f, 1f);
+				MarkAsChanged();
+			}
+		}
+	}
+
+	/// <summary>
 	/// Whether the texture is using a premultiplied alpha material.
 	/// </summary>
 
@@ -328,8 +349,8 @@ public class UI2DSprite : UIBasicSprite
 			if (tex != null)
 			{
 				Rect rect = mSprite.rect;
-				int w = Mathf.RoundToInt(rect.width);
-				int h = Mathf.RoundToInt(rect.height);
+				int w = Mathf.RoundToInt(pixelSize * rect.width);
+				int h = Mathf.RoundToInt(pixelSize * rect.height);
 
 				if ((w & 1) == 1) ++w;
 				if ((h & 1) == 1) ++h;

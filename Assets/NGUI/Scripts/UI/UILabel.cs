@@ -1346,20 +1346,33 @@ public class UILabel : UIWidget
 				{
 					mCalculatedSize = NGUIText.CalculatePrintedSize(mProcessedText);
 
-					mWidth = Mathf.Max(minWidth, Mathf.RoundToInt(mCalculatedSize.x));
-					if (regionX != 1f) mWidth = Mathf.RoundToInt(mWidth / regionX);
-					mHeight = Mathf.Max(minHeight, Mathf.RoundToInt(mCalculatedSize.y));
-					if (regionY != 1f) mHeight = Mathf.RoundToInt(mHeight / regionY);
+					int w = Mathf.Max(minWidth, Mathf.RoundToInt(mCalculatedSize.x));
+					if (regionX != 1f) w = Mathf.RoundToInt(w / regionX);
+					int h = Mathf.Max(minHeight, Mathf.RoundToInt(mCalculatedSize.y));
+					if (regionY != 1f) h = Mathf.RoundToInt(h / regionY);
 
-					if ((mWidth & 1) == 1) ++mWidth;
-					if ((mHeight & 1) == 1) ++mHeight;
+					if ((w & 1) == 1) ++w;
+					if ((h & 1) == 1) ++h;
+
+					if (mWidth != w || mHeight != h)
+					{
+						mWidth = w;
+						mHeight = h;
+						if (onChange != null) onChange();
+					}
 				}
 				else if (mOverflow == Overflow.ResizeHeight)
 				{
 					mCalculatedSize = NGUIText.CalculatePrintedSize(mProcessedText);
-					mHeight = Mathf.Max(minHeight, Mathf.RoundToInt(mCalculatedSize.y));
-					if (regionY != 1f) mHeight = Mathf.RoundToInt(mHeight / regionY);
-					if ((mHeight & 1) == 1) ++mHeight;
+					int h = Mathf.Max(minHeight, Mathf.RoundToInt(mCalculatedSize.y));
+					if (regionY != 1f) h = Mathf.RoundToInt(h / regionY);
+					if ((h & 1) == 1) ++h;
+
+					if (mHeight != h)
+					{
+						mHeight = h;
+						if (onChange != null) onChange();
+					}
 				}
 				else
 				{
@@ -1897,7 +1910,7 @@ public class UILabel : UIWidget
 		Color c = mEffectColor;
 		c.a *= finalAlpha;
 		if (bitmapFont != null && bitmapFont.premultipliedAlphaShader) c = NGUITools.ApplyPMA(c);
-		Color col = c.GammaToLinearSpace();
+		Color col = c;
 
 		for (int i = start; i < end; ++i)
 		{
@@ -1920,7 +1933,7 @@ public class UILabel : UIWidget
 			{
 				Color fc = c;
 				fc.a = uc.a * c.a;
-				cols.buffer[i] = fc.GammaToLinearSpace();
+				cols.buffer[i] = fc;
 			}
 		}
 	}

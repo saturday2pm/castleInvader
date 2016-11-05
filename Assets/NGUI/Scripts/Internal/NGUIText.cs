@@ -100,7 +100,7 @@ static public class NGUIText
 		finalSize = Mathf.RoundToInt(fontSize / pixelDensity);
 		finalSpacingX = spacingX * fontScale;
 		finalLineHeight = (fontSize + spacingY) * fontScale;
-		useSymbols = (bitmapFont != null && bitmapFont.hasSymbols) && encoding && symbolStyle != SymbolStyle.None;
+		useSymbols = (dynamicFont != null || bitmapFont != null) && encoding && symbolStyle != SymbolStyle.None;
 
 #if DYNAMIC_FONT
 		Font font = dynamicFont;
@@ -1173,6 +1173,12 @@ static public class NGUIText
 						c.a *= mColors[b].a;
 
 					--offset;
+
+					// Add the previous word to the final string
+					if (start < offset) sb.Append(text.Substring(start, offset - start + 1));
+					else sb.Append(ch);
+					start = offset + 1;
+
 					continue;
 				}
 			}
@@ -1315,9 +1321,11 @@ static public class NGUIText
 
 					if (wrapLineColors)
 					{
+						// Negate previous colors prior to the newline character
 						for (int i = 0; i < mColors.size; ++i)
 							sb.Insert(sb.Length - 1, "[-]");
 
+						// Add all the current colors before going forward
 						for (int i = 0; i < mColors.size; ++i)
 						{
 							sb.Append("[");
@@ -1366,10 +1374,9 @@ static public class NGUIText
 		float x = 0f, y = 0f, maxX = 0f;
 		float sizeF = finalSize;
 
-		Color gb = (tint * gradientBottom).GammaToLinearSpace();
-		Color gt = (tint * gradientTop).GammaToLinearSpace();
+		Color gb = (tint * gradientBottom);
+		Color gt = (tint * gradientTop);
 		Color gc = tint;
-		Color lc = gc.GammaToLinearSpace();
 		int textLength = text.Length;
 
 		Rect uvRect = new Rect();
@@ -1444,15 +1451,13 @@ static public class NGUIText
 					gc.a *= mAlpha;
 				}
 
-				lc = gc.GammaToLinearSpace();
-
 				for (int b = 0, bmax = mColors.size - 2; b < bmax; ++b)
 					gc.a *= mColors[b].a;
 
 				if (gradient)
 				{
-					gb = (gradientBottom * gc).GammaToLinearSpace();
-					gt = (gradientTop * gc).GammaToLinearSpace();
+					gb = (gradientBottom * gc);
+					gt = (gradientTop * gc);
 				}
 				--i;
 				continue;
@@ -1517,12 +1522,12 @@ static public class NGUIText
 				{
 					if (symbolStyle == SymbolStyle.Colored)
 					{
-						for (int b = 0; b < 4; ++b) cols.Add(lc);
+						for (int b = 0; b < 4; ++b) cols.Add(gc);
 					}
 					else
 					{
 						Color col = Color.white;
-						col.a = lc.a;
+						col.a = gc.a;
 						for (int b = 0; b < 4; ++b) cols.Add(col);
 					}
 				}
@@ -1656,7 +1661,7 @@ static public class NGUIText
 						else
 						{
 							for (int j = 0, jmax = (bold ? 16 : 4); j < jmax; ++j)
-								cols.Add(lc);
+								cols.Add(gc);
 						}
 					}
 					else
@@ -1681,9 +1686,8 @@ static public class NGUIText
 							case 8: col.a += 0.51f; break;
 						}
 
-						Color c = col.GammaToLinearSpace();
 						for (int j = 0, jmax = (bold ? 16 : 4); j < jmax; ++j)
-							cols.Add(c);
+							cols.Add(col);
 					}
 				}
 
@@ -1802,7 +1806,7 @@ static public class NGUIText
 					else
 					{
 						for (int j = 0, jmax = (bold ? 16 : 4); j < jmax; ++j)
-							cols.Add(lc);
+							cols.Add(gc);
 					}
 				}
 			}

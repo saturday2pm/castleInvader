@@ -128,6 +128,9 @@ public class UICamera : MonoBehaviour
 	public delegate bool GetKeyStateFunc (KeyCode key);
 	public delegate float GetAxisFunc (string name);
 	public delegate bool GetAnyKeyFunc ();
+	public delegate MouseOrTouch GetMouseDelegate (int button);
+	public delegate MouseOrTouch GetTouchDelegate (int id, bool createIfMissing);
+	public delegate void RemoveTouchDelegate (int id);
 
 	/// <summary>
 	/// GetKeyDown function -- return whether the specified key was pressed this Update().
@@ -175,7 +178,51 @@ public class UICamera : MonoBehaviour
 
 	static public GetAnyKeyFunc GetAnyKeyDown;
 
-	public delegate void OnScreenResize ();
+	/// <summary>
+	/// Get the details of the specified mouse button.
+	/// </summary>
+
+	static public GetMouseDelegate GetMouse = delegate(int button) { return mMouse[button]; };
+	
+	/// <summary>
+	/// Get or create a touch event. If you are trying to iterate through a list of active touches, use activeTouches instead.
+	/// </summary>
+
+	static public GetTouchDelegate GetTouch = delegate(int id, bool createIfMissing)
+	{
+		if (id < 0) return GetMouse(-id - 1);
+
+		for (int i = 0, imax = mTouchIDs.Count; i < imax; ++i)
+			if (mTouchIDs[i] == id) return activeTouches[i];
+
+		if (createIfMissing)
+		{
+			MouseOrTouch touch = new MouseOrTouch();
+			touch.pressTime = RealTime.time;
+			touch.touchBegan = true;
+			activeTouches.Add(touch);
+			mTouchIDs.Add(id);
+			return touch;
+		}
+		return null;
+	};
+
+	/// <summary>
+	/// Remove a touch event from the list.
+	/// </summary>
+
+	static public RemoveTouchDelegate RemoveTouch = delegate(int id)
+	{
+		for (int i = 0, imax = mTouchIDs.Count; i < imax; ++i)
+		{
+			if (mTouchIDs[i] == id)
+			{
+				mTouchIDs.RemoveAt(i);
+				activeTouches.RemoveAt(i);
+				return;
+			}
+		}
+	};
 
 	/// <summary>
 	/// Delegate triggered when the screen size changes for any reason.
@@ -183,6 +230,7 @@ public class UICamera : MonoBehaviour
 	/// </summary>
 
 	static public OnScreenResize onScreenResize;
+	public delegate void OnScreenResize ();
 
 	/// <summary>
 	/// Event type -- use "UI" for your user interfaces, and "World" for your game camera.
@@ -387,6 +435,12 @@ public class UICamera : MonoBehaviour
 	}
 
 	/// <summary>
+	/// If set to 'true', all events will be ignored until set to 'true'.
+	/// </summary>
+
+	static public bool ignoreAllEvents = false;
+
+	/// <summary>
 	/// If set to 'true', controller input will be flat-out ignored. Permanently, for all cameras.
 	/// </summary>
 
@@ -493,21 +547,24 @@ public class UICamera : MonoBehaviour
 		}
 		set
 		{
-			if (value == ControlScheme.Mouse)
+			if (mLastScheme != value)
 			{
-				currentKey = KeyCode.Mouse0;
-			}
-			else if (value == ControlScheme.Controller)
-			{
-				currentKey = KeyCode.JoystickButton0;
-			}
-			else if (value == ControlScheme.Touch)
-			{
-				currentKey = KeyCode.None;
-			}
-			else currentKey = KeyCode.Alpha0;
+				if (value == ControlScheme.Mouse)
+				{
+					currentKey = KeyCode.Mouse0;
+				}
+				else if (value == ControlScheme.Controller)
+				{
+					currentKey = KeyCode.JoystickButton0;
+				}
+				else if (value == ControlScheme.Touch)
+				{
+					currentKey = KeyCode.None;
+				}
+				else currentKey = KeyCode.Alpha0;
 
-			mLastScheme = value;
+				mLastScheme = value;
+			}
 		}
 	}
 
@@ -798,8 +855,12 @@ public class UICamera : MonoBehaviour
 
 			if (mHover)
 			{
-				if (mHover != controller.current && mHover.GetComponent<UIKeyNavigation>() != null)
-					controller.current = mHover;
+				if (mHover != controller.current)
+				{
+					Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+					if (mHover.GetComponent<UIKeyNavigation>() != null) controller.current = mHover;
+					Profiler.EndSample();
+				}
 
 				// Locate the appropriate camera for the new object
 				if (statesDiffer)
@@ -950,8 +1011,10 @@ public class UICamera : MonoBehaviour
 
 			if (value != null)
 			{
+				Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
 				UIKeyNavigation nav = value.GetComponent<UIKeyNavigation>();
 				if (nav != null) controller.current = value;
+				Profiler.EndSample();
 			}
 
 			// Set the camera for events
@@ -976,7 +1039,9 @@ public class UICamera : MonoBehaviour
 			// Set the selection
 			if (mSelected)
 			{
+				Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
 				mInputFocus = (mSelected.activeInHierarchy && mSelected.GetComponent<UIInput>() != null);
+				Profiler.EndSample();
 				if (onSelect != null) onSelect(mSelected, true);
 				Notify(mSelected, "OnSelect", true);
 			}
@@ -1127,17 +1192,24 @@ public class UICamera : MonoBehaviour
 
 	static Rigidbody FindRootRigidbody (Transform trans)
 	{
+		Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+
 		while (trans != null)
 		{
-			if (trans.GetComponent<UIPanel>() != null) return null;
+			if (trans.GetComponent<UIPanel>() != null) break;
 #if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
 			Rigidbody rb = trans.rigidbody;
 #else
 			Rigidbody rb = trans.GetComponent<Rigidbody>();
 #endif
-			if (rb != null) return rb;
+			if (rb != null)
+			{
+				Profiler.EndSample();
+				return rb;
+			}
 			trans = trans.parent;
 		}
+		Profiler.EndSample();
 		return null;
 	}
 
@@ -1147,17 +1219,24 @@ public class UICamera : MonoBehaviour
 
 	static Rigidbody2D FindRootRigidbody2D (Transform trans)
 	{
+		Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+
 		while (trans != null)
 		{
-			if (trans.GetComponent<UIPanel>() != null) return null;
+			if (trans.GetComponent<UIPanel>() != null) break;
 #if UNITY_4_3 || UNITY_4_5 || UNITY_4_6 || UNITY_4_7
 			Rigidbody2D rb = trans.rigidbody2D;
 #else
 			Rigidbody2D rb = trans.GetComponent<Rigidbody2D>();
 #endif
-			if (rb != null) return rb;
+			if (rb != null)
+			{
+				Profiler.EndSample();
+				return rb;
+			}
 			trans = trans.parent;
 		}
+		Profiler.EndSample();
 		return null;
 	}
 
@@ -1189,6 +1268,9 @@ public class UICamera : MonoBehaviour
 
 			// Convert to view space
 			currentCamera = cam.cachedCamera;
+#if !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2
+			if (currentCamera.targetDisplay != 0) continue;
+#endif
 			Vector3 pos = currentCamera.ScreenToViewportPoint(inPos);
 			if (float.IsNaN(pos.x) || float.IsNaN(pos.y)) continue;
 
@@ -1227,7 +1309,9 @@ public class UICamera : MonoBehaviour
 					for (int b = 0; b < hits.Length; ++b)
 					{
 						GameObject go = hits[b].collider.gameObject;
+						Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
 						UIWidget w = go.GetComponent<UIWidget>();
+						Profiler.EndSample();
 
 						if (w != null)
 						{
@@ -1273,7 +1357,9 @@ public class UICamera : MonoBehaviour
 				else if (hits.Length == 1)
 				{
 					GameObject go = hits[0].collider.gameObject;
+					Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
 					UIWidget w = go.GetComponent<UIWidget>();
+					Profiler.EndSample();
 
 					if (w != null)
 					{
@@ -1330,7 +1416,9 @@ public class UICamera : MonoBehaviour
 						for (int b = 0; b < hits.Length; ++b)
 						{
 							GameObject go = hits[b].gameObject;
+							Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
 							UIWidget w = go.GetComponent<UIWidget>();
+							Profiler.EndSample();
 
 							if (w != null)
 							{
@@ -1373,7 +1461,9 @@ public class UICamera : MonoBehaviour
 					else if (hits.Length == 1)
 					{
 						GameObject go = hits[0].gameObject;
+						Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
 						UIWidget w = go.GetComponent<UIWidget>();
+						Profiler.EndSample();
 
 						if (w != null)
 						{
@@ -1544,52 +1634,6 @@ public class UICamera : MonoBehaviour
 	}
 
 	/// <summary>
-	/// Get the details of the specified mouse button.
-	/// </summary>
-
-	static public MouseOrTouch GetMouse (int button) { return mMouse[button]; }
-
-	/// <summary>
-	/// Get or create a touch event. If you are trying to iterate through a list of active touches, use activeTouches instead.
-	/// </summary>
-
-	static public MouseOrTouch GetTouch (int id, bool createIfMissing = false)
-	{
-		if (id < 0) return GetMouse(-id - 1);
-
-		for (int i = 0, imax = mTouchIDs.Count; i < imax; ++i)
-			if (mTouchIDs[i] == id) return activeTouches[i];
-
-		if (createIfMissing)
-		{
-			MouseOrTouch touch = new MouseOrTouch();
-			touch.pressTime = RealTime.time;
-			touch.touchBegan = true;
-			activeTouches.Add(touch);
-			mTouchIDs.Add(id);
-			return touch;
-		}
-		return null;
-	}
-
-	/// <summary>
-	/// Remove a touch event from the list.
-	/// </summary>
-
-	static public void RemoveTouch (int id)
-	{
-		for (int i = 0, imax = mTouchIDs.Count; i < imax; ++i)
-		{
-			if (mTouchIDs[i] == id)
-			{
-				mTouchIDs.RemoveAt(i);
-				activeTouches.RemoveAt(i);
-				return;
-			}
-		}
-	}
-
-	/// <summary>
 	/// Add this camera to the list.
 	/// </summary>
 
@@ -1665,6 +1709,8 @@ public class UICamera : MonoBehaviour
 	
 	void Start ()
 	{
+		list.Sort(CompareFunc);
+
 		if (eventType != EventType.World_3D && cachedCamera.transparencySortMode != TransparencySortMode.Orthographic)
 			cachedCamera.transparencySortMode = TransparencySortMode.Orthographic;
 
@@ -1703,6 +1749,9 @@ public class UICamera : MonoBehaviour
 
 	void Update ()
 	{
+		// Ignore events if asked for
+		if (ignoreAllEvents) return;
+
 		// Only the first UI layer should be processing events
 #if UNITY_EDITOR
 		if (!Application.isPlaying || !handlesEvents) return;
@@ -1760,7 +1809,7 @@ public class UICamera : MonoBehaviour
 		if ((useKeyboard || useController) && !disableController && !ignoreControllerInput) ProcessOthers();
 
 		// If it's time to show a tooltip, inform the object we're hovering over
-		if (useMouse && mHover != null && currentScheme == ControlScheme.Mouse)
+		if (useMouse && mHover != null)
 		{
 			float scroll = !string.IsNullOrEmpty(scrollAxisName) ? GetAxis(scrollAxisName) : 0f;
 
@@ -1770,7 +1819,7 @@ public class UICamera : MonoBehaviour
 				Notify(mHover, "OnScroll", scroll);
 			}
 
-			if (showTooltips && mTooltipTime != 0f && !UIPopupList.isOpen && mMouse[0].dragged == null &&
+			if (currentScheme == ControlScheme.Mouse && showTooltips && mTooltipTime != 0f && !UIPopupList.isOpen && mMouse[0].dragged == null &&
 				(mTooltipTime < RealTime.time || GetKey(KeyCode.LeftShift) || GetKey(KeyCode.RightShift)))
 			{
 				currentTouch = mMouse[0];
@@ -2220,7 +2269,7 @@ public class UICamera : MonoBehaviour
 
 				if (!useKeyboard && key < KeyCode.Mouse0) continue;
 				if ((!useController || ignoreControllerInput) && key >= KeyCode.JoystickButton0) continue;
-				if (!useMouse && (key >= KeyCode.Mouse0 || key <= KeyCode.Mouse6)) continue;
+				if (!useMouse && (key >= KeyCode.Mouse0 && key <= KeyCode.Mouse6)) continue;
 
 				currentKey = key;
 				if (onKey != null) onKey(currentTouch.current, key);
@@ -2280,14 +2329,18 @@ public class UICamera : MonoBehaviour
 
 				if (currentTouch.pressed != null)
 				{
+					Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
 					UIKeyNavigation nav = currentTouch.pressed.GetComponent<UIKeyNavigation>();
+					Profiler.EndSample();
 					if (nav != null) controller.current = currentTouch.pressed;
 				}
 
 				// Set the selection
 				if (mSelected)
 				{
+					Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
 					mInputFocus = (mSelected.activeInHierarchy && mSelected.GetComponent<UIInput>() != null);
+					Profiler.EndSample();
 					if (onSelect != null) onSelect(mSelected, true);
 					Notify(mSelected, "OnSelect", true);
 				}
@@ -2397,15 +2450,22 @@ public class UICamera : MonoBehaviour
 			Notify(currentTouch.pressed, "OnPress", false);
 
 			// Send a hover message to the object
-			if (isMouse && HasCollider(currentTouch.pressed))
+			if (isMouse)
 			{
-				// OnHover is sent to restore the visual state
-				if (mHover == currentTouch.current)
+				Profiler.BeginSample("Editor-only GC allocation (GetComponent)");
+				var hasCollider = HasCollider(currentTouch.pressed);
+				Profiler.EndSample();
+
+				if (hasCollider)
 				{
-					if (onHover != null) onHover(currentTouch.current, true);
-					Notify(currentTouch.current, "OnHover", true);
+					// OnHover is sent to restore the visual state
+					if (mHover == currentTouch.current)
+					{
+						if (onHover != null) onHover(currentTouch.current, true);
+						Notify(currentTouch.current, "OnHover", true);
+					}
+					else hoveredObject = currentTouch.current;
 				}
-				else hoveredObject = currentTouch.current;
 			}
 
 			// If the button/touch was released on the same object, consider it a click and select it

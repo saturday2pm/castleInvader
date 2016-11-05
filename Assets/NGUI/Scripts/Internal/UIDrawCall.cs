@@ -133,9 +133,24 @@ public class UIDrawCall : MonoBehaviour
 
 	public string sortingLayerName
 	{
-		get { return (mRenderer != null) ? mRenderer.sortingLayerName : null; }
-		set { if (mRenderer != null && mRenderer.sortingLayerName != value) mRenderer.sortingLayerName = value; }
+		get
+		{
+			if (!string.IsNullOrEmpty(mSortingLayerName)) return mSortingLayerName;
+			if (mRenderer == null) return null;
+			mSortingLayerName = mRenderer.sortingLayerName;
+			return mSortingLayerName;
+		}
+		set
+		{
+			if (mRenderer != null && mSortingLayerName != value)
+			{
+				mSortingLayerName = value;
+				mRenderer.sortingLayerName = value;
+			}
+		}
 	}
+
+	[System.NonSerialized] string mSortingLayerName;
 
 	/// <summary>
 	/// Final render queue used to draw the draw call's geometry.
@@ -389,6 +404,8 @@ public class UIDrawCall : MonoBehaviour
 		}
 	}
 
+	static ColorSpace mColorSpace = ColorSpace.Uninitialized;
+
 	/// <summary>
 	/// Set the draw call's geometry.
 	/// </summary>
@@ -401,6 +418,22 @@ public class UIDrawCall : MonoBehaviour
 		// Safety check to ensure we get valid values
 		if (count > 0 && (count == uvs.size && count == cols.size) && (count % 4) == 0)
 		{
+			if (mColorSpace == ColorSpace.Uninitialized)
+				mColorSpace = QualitySettings.activeColorSpace;
+
+			if (mColorSpace == ColorSpace.Linear)
+			{
+				for (int i = 0; i < cols.size; ++i)
+				{
+					var c = cols[i];
+					c.r = Mathf.GammaToLinearSpace(c.r);
+					c.g = Mathf.GammaToLinearSpace(c.g);
+					c.b = Mathf.GammaToLinearSpace(c.b);
+					c.a = Mathf.GammaToLinearSpace(c.a);
+					cols[i] = c;
+				}
+			}
+
 			// Cache all components
 			if (mFilter == null) mFilter = gameObject.GetComponent<MeshFilter>();
 			if (mFilter == null) mFilter = gameObject.AddComponent<MeshFilter>();
@@ -417,7 +450,7 @@ public class UIDrawCall : MonoBehaviour
 					mMesh = new Mesh();
 					mMesh.hideFlags = HideFlags.DontSave;
 					mMesh.name = (mMaterial != null) ? "[NGUI] " + mMaterial.name : "[NGUI] Mesh";
-					mMesh.MarkDynamic();
+					if (dx9BugWorkaround == 0) mMesh.MarkDynamic();
 					setIndices = true;
 				}
 #if !UNITY_FLASH
@@ -671,12 +704,22 @@ public class UIDrawCall : MonoBehaviour
 		}
 	}
 
+	// Unity 5.4 bug work-around: http://www.tasharen.com/forum/index.php?topic=14839.0
+	static int dx9BugWorkaround = -1;
+
 	/// <summary>
 	/// Cache the property IDs.
 	/// </summary>
 
 	void Awake ()
 	{
+		if (dx9BugWorkaround == -1)
+		{
+			var pf = Application.platform;
+			dx9BugWorkaround = ((pf == RuntimePlatform.WindowsPlayer || pf == RuntimePlatform.XBOX360) &&
+				SystemInfo.graphicsShaderLevel < 40 && SystemInfo.graphicsDeviceVersion.Contains("Direct3D")) ? 1 : 0;
+		}
+
 		if (ClipRange == null)
 		{
 			ClipRange = new int[]
@@ -894,4 +937,17 @@ public class UIDrawCall : MonoBehaviour
 			}
 		}
 	}
+
+#if !UNITY_4_7 && !UNITY_5_0 && !UNITY_5_1 && !UNITY_5_2 && !UNITY_5_3
+	/// <summary>
+	/// Move all draw calls to the specified scene.
+	/// http://www.tasharen.com/forum/index.php?topic=13965.0
+	/// </summary>
+
+	static public void MoveToScene (UnityEngine.SceneManagement.Scene scene)
+	{
+		foreach (var dc in activeList) UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(dc.gameObject, scene);
+		foreach (var dc in inactiveList) UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(dc.gameObject, scene);
+	}
+#endif
 }

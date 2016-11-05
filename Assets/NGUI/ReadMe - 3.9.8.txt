@@ -1,7 +1,7 @@
 ----------------------------------------------
             NGUI: Next-Gen UI kit
  Copyright © 2011-2016 Tasharen Entertainment
-            Version 3.9.8
+            Version 3.10.2
     http://www.tasharen.com/?page_id=197
             support@tasharen.com
 ----------------------------------------------
@@ -54,6 +54,33 @@ and it will not be included in the build of your game. It's only used in the edi
 -----------------
  Version History
 -----------------
+
+3.10.2
+- NEW: Added UIDrawCall.MoveToScene for Unity 5.4+ to make it easier to move the UI to another scene.
+- FIX: Fixed an issue with Unity 5.4.1 in regards to the NGUI menu.
+- FIX: DragDropItem will now inverse transform the delta, so it should theoretically work even with rotated panels.
+- FIX: DragDropItem now again clears the scroll view reference after the drag operation completes.
+- FIX: Unity 5.4 DX9 bug work-around (no longer marking VBOs as dynamic).
+
+3.10.1
+- NEW: Added UICamera.ignoreAllEvents to easily disable all NGUI events.
+- FIX: Unity 5.4 editor on OSX: fixes for retina-related glitches of 5.4.
+- FIX: Gamma to linear conversion now happens in the draw call class and no longer needs to be set in each OnFill function.
+
+3.10.0
+- NEW: Added Texture2D.MakeReadable(true/false) -- a convenience extension for the editor. Not sure why this isn't built-in.
+- FIX: UIDragScrollView will no longer inform the scroll view of OnPress(false) on disable unless it's actually being dragged.
+- FIX: Removed ColorMask RGB from shaders since according to Unity docs it may slow down some mobiles.
+- FIX: Fixed Unity 5.4 function deprecation warnings.
+- MISC: Added Profiler.BeginSample/EndSample blocks to clarify GC allocations that only happen in the editor.
+
+3.9.9
+- NEW: Added customizable GetMouse, GetTouch and RemoveTouch delegates to UICamera replacing fixed Input calls. This makes all of NGUI's events go through user-settable delegates.
+- NEW: Sprite Animation script now has a frame offset index you can set if you want it to start at something other than 0.
+- NEW: UIScrollView now has a "constrain on drag" as an option rather than always being off.
+- FIX: UILabel resizing due to overflow settings will now trigger its UIWidget.onChange notification.
+- FIX: Fix for a visibility issue caused by instantiating a panel off-screen then bringing it into view.
+- FIX: Fixed a bug with text wrapping not wrapping colors properly in some situations (UITextList).
 
 3.9.8
 - NEW: NGUI now uses Color instead of Color32 for colors, which work better with linear space colors.
