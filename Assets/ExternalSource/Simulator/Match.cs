@@ -43,8 +43,9 @@ namespace Simulator
 
 				do
 				{
-					x = r.Next(0, Option.Width);
-					y = r.Next(0, Option.Height);
+                    int padding = 50;
+					x = r.Next(padding, Option.Width - padding);
+					y = r.Next(padding, Option.Height - padding);
 				} while (Castles.Any(c => (c.Pos.X - x) * (c.Pos.X - x) + (c.Pos.Y - y) * (c.Pos.Y - y) < Option.CastleDistance * Option.CastleDistance));
                 
 				Castles.Add(new Castle(waypointId, Option.CastleStartUnitNum, x, y, Option.UnitRunRatio, Option.UnitRunDuration, Option.UpgradeInfo));

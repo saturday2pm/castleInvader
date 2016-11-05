@@ -1,5 +1,6 @@
 ﻿using System;
 using Simulator;
+using System.Linq;
 
 public class AIPlayerObject : Player
 {
@@ -11,7 +12,11 @@ public class AIPlayerObject : Player
 
     public override void Update(Match match)
     {
-        foreach (var castle in OwnCastles)
+        if (0 != r.Next(0, 30))
+            return;
+
+        var selected = OwnCastles.OrderBy(_ => r.Next()).Take(r.Next(1, 1 + (int)(OwnCastles.Count * 0.5)));
+        foreach (var castle in selected)
         {
             CastleUpdate(match, castle);
         }
@@ -19,9 +24,6 @@ public class AIPlayerObject : Player
 
     void CastleUpdate(Match match, Castle castle)
     {
-        if (0 != r.Next(0, 30))
-            return;
-
         //전략
         //업그레이드 가능한 성은 코스트 *1.2보다 유닛 수가 많으면 업그레이드 한다.
         //자신이 소유한 모든 성에 대해서, 가장 가까운 빈 성 한 곳에 쳐들어간다.

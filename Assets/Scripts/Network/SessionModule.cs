@@ -13,7 +13,7 @@ class SessionModule : NetworkModule
         if (MatchData == null)
             return;
 
-        Connect(UriBuilder.Create(MatchData.gameServerAddress, MatchData.senderId.ToString(), MatchData.matchToken));
+        Connect(UriBuilder.Create(MatchData.gameServerAddress,  UserType.Guset, MatchData.senderId.ToString(), MatchData.matchToken));
 
         AddHandler<StartGame>(OnStartGame);
         AddHandler<CancelGame>(OnCancelGame);
