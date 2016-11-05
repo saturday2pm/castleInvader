@@ -58,7 +58,13 @@ public class CastleController : MonoBehaviour
 
     void OnPress(bool isDown)
     {
-        InputController.OnCastleClick(this);
+        if (isDown)
+            InputController.OnCastleClick(this);
+        else
+        {
+            var hoveredCastle = UICamera.currentTouch.current.GetComponent<CastleController>();
+            InputController.OnDrop(hoveredCastle);
+        }
     }
 
     void OnDrag(Vector2 delta)
@@ -70,7 +76,7 @@ public class CastleController : MonoBehaviour
 
     void OnDrop(GameObject go)
     {
-        InputController.OnDrop(this);
+        //InputController.OnDrop(this);
     }
 
     public void ActivateToSelector()

@@ -4,6 +4,17 @@ using System.Text;
 
 namespace Simulator
 {
+    public class AttackCommand
+    {
+        public AttackCommand(Waypoint _target, int Duration)
+        {
+            Target = _target;
+            LeftTick = Duration;
+        }
+        public Waypoint Target { get; set; }
+        public int LeftTick { get; set; }
+    }
+
 	public class Castle : Waypoint
 	{
         Player owner = null;
@@ -13,9 +24,11 @@ namespace Simulator
 		public int Level { get { return level; } private set { level = value; } }
 
 		List<CastleUpgradeInfo> UpgradeInfo;
+        List<AttackCommand> AttackCommands = new List<AttackCommand>();
 
-		float unitNum;
+        float unitNum;
 		float unitRunRatio;
+        int unitRunDuration;
 
 		public float UnitIncreaseRatio
 		{
@@ -53,26 +66,23 @@ namespace Simulator
 			}
 		}
 
-        List<Waypoint> endPoint = new List<Waypoint>();
-        public List<Waypoint> EndPoint { get { return endPoint; } private set { endPoint = value; } }
-
-		public Castle(int id, int startNum, float x, float y, float runRatio, List<CastleUpgradeInfo> info) : base(id)
+		public Castle(int id, int startNum, float x, float y, float runRatio, int runDuration, List<CastleUpgradeInfo> info) : base(id)
 		{
 			Pos = new Point(x, y);
 			unitNum = startNum;
 
 			unitRunRatio = runRatio;
-
+            unitRunDuration = runDuration;
 			UpgradeInfo = info;
 		}
 
-		public Castle(int id, Point pos, float runRatio, List<CastleUpgradeInfo> info) : base(id)
+		public Castle(int id, Point pos, float runRatio, int runDuration, List<CastleUpgradeInfo> info) : base(id)
 		{
 			Pos = pos;
 
 			unitRunRatio = runRatio;
-
-			UpgradeInfo = info;
+            unitRunDuration = runDuration;
+            UpgradeInfo = info;
 		}
 
 		public void Update(Match match)
@@ -82,19 +92,18 @@ namespace Simulator
 				return; // 야만인 땅은 걍 가만히 있음
 			}
 
-			unitNum += unitNum * UnitIncreaseRatio;
+			unitNum += UnitIncreaseRatio;
+            int attackNum = (int)(unitNum * unitRunRatio / AttackCommands.Count);
 
-			int num = (int)(unitNum * unitRunRatio);
+            //unit 일부를 다른 지역으로 파견함
+            foreach (var attack in AttackCommands)
+            {
+                match.CreateUnit(attackNum, Owner, Radius, this, attack.Target);
+                unitNum -= attackNum;
+                attack.LeftTick--;
+            }
 
-			//unit 일부를 다른 지역으로 파견함
-			if (num > 0 && num * EndPoint.Count < UnitNum)
-			{
-				foreach (var end in EndPoint)
-				{
-					match.CreateUnit(num, Owner, Radius, this, end);
-					unitNum -= num;
-				}
-			}
+            AttackCommands.RemoveAll(x => x.LeftTick < 1);
 
 			if (unitNum > MaxNum)
 				unitNum = MaxNum;
@@ -105,18 +114,11 @@ namespace Simulator
 			if (point == this)
 				return;
 
-			if (!EndPoint.Contains(point))
-			{
-				EndPoint.Add(point);
-			}
-		}
-
-		public void CancelAttack(Waypoint point)
-		{
-			if (point == this)
-				return;
-
-			EndPoint.Remove(point);
+            var command = AttackCommands.Find(x => x.Target == point);
+            if (command != null)
+                command.LeftTick = unitRunDuration;
+            else
+                AttackCommands.Add(new AttackCommand(point, unitRunDuration));
 		}
 
 		public void AddUnit(Unit unit)
@@ -143,7 +145,6 @@ namespace Simulator
 
 				Owner = unit.Owner;
 				Owner.AddCastle(this);
-                EndPoint.Clear();
 			}
 		}
 

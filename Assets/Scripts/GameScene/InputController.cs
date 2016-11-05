@@ -63,13 +63,11 @@ public class InputController : MonoBehaviour {
 
     public void OnDrop(CastleController castle)
     {
-        if (!IsDraging)
-            return;
-
-        if (castle)
+        if (IsDraging && castle)
         {
             ToCastle = castle;
-            OnMove(FromCastle.Id, ToCastle.Id);
+            if(FromCastle != ToCastle)
+                OnMove(FromCastle.Id, ToCastle.Id);
         }
 
         ResetDragIndicator();

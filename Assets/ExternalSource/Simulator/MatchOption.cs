@@ -34,7 +34,7 @@ namespace Simulator
 		public int CastleStartUnitNum { get; set; }
 
 		public float UnitRunRatio { get; set; }
-
+        public int UnitRunDuration { get; set; }
 
 		public float UnitSpeed { get; set; }
 		//unit의 공격 범위

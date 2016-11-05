@@ -47,7 +47,7 @@ namespace Simulator
 					y = r.Next(0, Option.Height);
 				} while (Castles.Any(c => (c.Pos.X - x) * (c.Pos.X - x) + (c.Pos.Y - y) * (c.Pos.Y - y) < Option.CastleDistance * Option.CastleDistance));
                 
-				Castles.Add(new Castle(waypointId, Option.CastleStartUnitNum, x, y, Option.UnitRunRatio, Option.UpgradeInfo));
+				Castles.Add(new Castle(waypointId, Option.CastleStartUnitNum, x, y, Option.UnitRunRatio, Option.UnitRunDuration, Option.UpgradeInfo));
 				waypointId++;
 			}
 		}

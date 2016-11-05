@@ -3,6 +3,8 @@ using Simulator;
 
 public class AIPlayerObject : Player
 {
+    static Random r = new Random();
+
     public override void Init(Match match)
     {
     }
@@ -17,6 +19,9 @@ public class AIPlayerObject : Player
 
     void CastleUpdate(Match match, Castle castle)
     {
+        if (0 != r.Next(0, 30))
+            return;
+
         //전략
         //업그레이드 가능한 성은 코스트 *1.2보다 유닛 수가 많으면 업그레이드 한다.
         //자신이 소유한 모든 성에 대해서, 가장 가까운 빈 성 한 곳에 쳐들어간다.
@@ -82,21 +87,10 @@ public class AIPlayerObject : Player
             Attack(castle, allyCastle);
             return;
         }
-
-        if (castle.EndPoint.Count > 0)
-            castle.CancelAttack(castle.EndPoint[0]);
     }
 
     void Attack(Castle castle, Castle end)
     {
-        if (castle.EndPoint.Count > 0)
-        {
-            if (end == castle.EndPoint[0])
-                return;
-
-            castle.CancelAttack(castle.EndPoint[0]);
-        }
-
         castle.Attack(end);
     }
 }
