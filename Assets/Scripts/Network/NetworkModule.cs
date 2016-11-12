@@ -25,12 +25,15 @@ public class NetworkModule : MonoBehaviour
     // Use this for initialization
     public void Connect(string url)
     {
+        Debug.Log("WSConnect - " + url);
+
         webSocketClient = new WebSocket(url);
         webSocketClient.ConnectAsync();
 
         webSocketClient.OnOpen += Ws_OnOpen;
         webSocketClient.OnMessage += Ws_OnMessage; ;
         webSocketClient.OnClose += Ws_OnClose;
+        webSocketClient.OnError += WebSocketClient_OnError;
     }
 
     public void Close()
@@ -75,30 +78,35 @@ public class NetworkModule : MonoBehaviour
 
     protected virtual void OnSendFail<T>(T failedPacket) where T : PacketBase
     {
-        Debug.Log("Send Failed : " + Serializer.ToJson(failedPacket));
+        //Debug.Log("Send Failed : " + Serializer.ToJson(failedPacket));
     }
 
     protected virtual void OnClose()
     {
+        Debug.Log("On Close");
+
     }
 
     protected virtual void OnOpen()
     {
+        Debug.Log("On Open");
     }
 
     private void OnMessage(string message)
     {
-        Debug.Log("Recieve Message : " + message);
+        //Debug.Log("Recieve Message : " + message);
         packetHelper.PushPacket(message);
     }
 
     private void Ws_OnOpen(object sender, EventArgs e)
     {
+        Debug.Log("On Open--");
         MainThreadDispatcher.Queue(OnOpen);
     }
 
     private void Ws_OnClose(object sender, EventArgs e)
     {
+        Debug.Log("On Close--" + e.ToString());
         MainThreadDispatcher.Queue(OnClose);
     }
 
@@ -108,6 +116,11 @@ public class NetworkModule : MonoBehaviour
         {
             OnMessage(e.Data.ToString());
         });
+    }
+
+    private void WebSocketClient_OnError(object sender, ErrorEventArgs e)
+    {
+        Debug.LogError("Error : " + e.Message);
     }
 }
 

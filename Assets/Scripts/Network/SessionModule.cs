@@ -13,7 +13,7 @@ class SessionModule : NetworkModule
         if (MatchData == null)
             return;
 
-        Connect(UriBuilder.Create(MatchData.gameServerAddress,  UserType.Guset, MatchData.senderId.ToString(), MatchData.matchToken));
+        Connect(UriBuilder.Create(MatchData.gameServerAddress,  UserType.Guset, MatchModule.CurrentPlayerId.ToString(), MatchData.matchToken));
 
         AddHandler<StartGame>(OnStartGame);
         AddHandler<CancelGame>(OnCancelGame);
@@ -41,7 +41,7 @@ class SessionModule : NetworkModule
         var playerObjects = _startData.players.ToList().ConvertAll(x => 
         {
             Simulator.Player player;
-            if(x.id == MatchData.senderId)
+            if(x.id == MatchModule.CurrentPlayerId)
             {
                 player = new NetworkUserPlayerObject()
                 {
@@ -51,7 +51,7 @@ class SessionModule : NetworkModule
             }
             else
             {
-                player = new NetworkAIPlayerObject()
+                player = new NetworkPlayerObject()
                 {
                     Id = x.id,
                     Name = x.name,

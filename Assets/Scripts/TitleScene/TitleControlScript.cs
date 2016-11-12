@@ -11,7 +11,7 @@ public class TitleControlScript : MonoBehaviour
 
     void Start()
     {
-       // Screen.SetResolution()
+        Screen.SetResolution(1124, 676, true);
         MatchClient.OnConnected += OnMatchClientConnected;
         MultiButton.isEnabled = false;
     }

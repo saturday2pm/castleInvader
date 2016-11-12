@@ -169,8 +169,9 @@ namespace Simulator
 
 		public bool IsMovable(Unit unit)
 		{
-			//나보다 더 앞에 있는 유닛이 내가 이동할 수 있는 위치 안 쪽이면 못 움직임
-			return Units[unit.Road].FirstOrDefault(u => u.CompareTo(unit) > 0 && u.Pos.DistSquare(unit.Pos) < Option.UnitSpeed * Option.UnitSpeed) == null;
+            //나보다 더 앞에 있는 유닛이 내가 이동할 수 있는 위치 안 쪽이면 못 움직임
+            //return Units[unit.Road].FirstOrDefault(u => u.CompareTo(unit) > 0 && u.Pos.DistSquare(unit.Pos) < Option.UnitSpeed * Option.UnitSpeed) == null;
+            return true;
 		}
 
 		public void CreateUnit(int num, Player owner, float startOffset, Waypoint start, Waypoint end)

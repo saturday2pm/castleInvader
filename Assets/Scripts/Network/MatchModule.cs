@@ -17,8 +17,10 @@ public class MatchModule : NetworkModule
     protected override void OnStart()
     {
         CurrentPlayerId = new Random().Next(1000);
+        Serializer.senderId = CurrentPlayerId;
+
         LastSuccessMatch = null;
-        Connect("ws://" + MatchHost + "/mmaker?version=" + ProtocolVersion.version);
+        Connect("ws://" + MatchHost + "/mmaker?version=" + ProtocolVersion.version + "&userType=guest&playerId=" + CurrentPlayerId.ToString());
         AddHandler<MatchSuccess>(OnMatchSuccess);
     }
 
